@@ -1,6 +1,6 @@
 import React from 'react';
 import {StyleProp, TouchableOpacity, ViewStyle} from 'react-native';
-import IconImage from './Icon';
+import { IconImage } from './Icon';
 import {IconProps} from '../interfaces/content';
 
 const IconButton: React.FC<{
