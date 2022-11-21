@@ -31,27 +31,31 @@ import ActionSheet, { ActionType } from '../components/ActionSheet';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../interfaces/navigation';
 import * as ROUTES from '../constants/routes';
+import useUploadService from '../providers/Uploading';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const dispatch = useAppDispatch();
+    const {duration, position} = useProgress();
     const { addNewTrack } = usePlayerService();
+    const { toggleShowUploadModal, handleSetUploadingMedia } = useUploadService();
+    
     const tagContainerRef = useRef<ScrollView>(null);
     const updateAudioRef = useRef<UpdateAudioRef>(null);
     const downloadModalRef = useRef<DownloadModalRef>(null);
     const actionSheetRef = useRef<Pick<ActionSheetRef, 'hide' | 'show'>>(null);
-    
+
     const [tags, setTags] = useState<ITag[]>([]);
     const [remotePlaylist, setRemotePlaylist] = useState<IMedia[]>([]);
     const [subscriber, setSubscriber] = useState<SubscriberType[]>([]);
     const [displayPlaylist, setDisplayPlaylist] = useState<IMedia[]>([]);
     const [normalizedData, setNormalizedData] = useState<NormalizedData>({});
     const [selectedAudio, setSelectedAudio] = useState<IMedia>(defaultAudio);
-    
+
     const formatTime = useTimeFormatter();
     const { getRemoteAudioFiles } = useFirestore();
-    
+
     const defaultTags = useAppSelector(getTags);
     const { currentUser } = useAppSelector(getAuth);
     const localPlaylist = useAppSelector(getPlaylist);
@@ -108,7 +112,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                     ...currentNormalized,
                     [item.id]: {
                         ...currentNormalized[item.id],
-                        tags: [...(currentNormalized[item.id].tags || []), ...(item.tags || [])],
+                        tags: [...new Set([...(currentNormalized[item.id].tags || []), ...(item.tags || [])])],
                         isOwner: item.owner.id === currentUser?.uid,
                         availableRemote: true,
                     },
@@ -207,6 +211,8 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         [dispatch]
     );
 
+    console.log({duration, position})
+
     const handleEditAudio = useCallback(
         ({ author, description, tags: updatedTags, id, title, url }: IMedia) => {
             dispatch(
@@ -255,10 +261,10 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const handleAudioDisplayPress = useCallback(
         (id: string) => {
             const foundMediaIdx = playlist.findIndex((item) => item.id === id);
-              if (foundMediaIdx > -1) {
+            if (foundMediaIdx > -1) {
                 setSelectedAudio(playlist[foundMediaIdx]);
-              }
-              handleToggleActionSheet();
+            }
+            handleToggleActionSheet();
         },
         [playlist, setSelectedAudio, handleToggleActionSheet]
     );
@@ -293,25 +299,24 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 },
                 disabled: !selectedAudio.availableLocal || !selectedAudio.isOwner,
             },
-            // {
-            //     icon: 'upload',
-            //     label: 'Upload',
-            //     disabled: selectedAudio.availableRemote,
-            //     onPress: currentUser?.email
-            //         ? () => {
-
-            //             // toggleShowUploadModal();
-            //             handleCloseActionSheet();
-            //             // handleSetUploadingMedia(selectedAudio);
-            //         }
-            //         : () => {
-            //             handleCloseActionSheet();
-            //             toast({
-            //                 text2: 'You need to sign in first to upload media',
-            //                 type: 'error',
-            //             });
-            //         },
-            // },
+            {
+                icon: 'upload',
+                label: 'Upload',
+                disabled: selectedAudio.availableRemote || !isAndroid,
+                onPress: currentUser?.email
+                    ? () => {
+                        handleSetUploadingMedia(selectedAudio);
+                        handleCloseActionSheet();
+                        toggleShowUploadModal();
+                    }
+                    : () => {
+                        handleCloseActionSheet();
+                        toast({
+                            text2: 'You need to sign in first to upload media',
+                            type: 'error',
+                        });
+                    },
+            },
         ],
         [
             selectedAudio,
@@ -324,11 +329,16 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const navigateToPlayer = useCallback(
         (newMedia: IMedia) => {
             addNewTrack({ newMedia }).then(() => {
-                navigation.navigate(ROUTES.PlayerScreen);
+                // navigation.navigate(ROUTES.PlayerScreen);
             });
         },
         [navigation, addNewTrack]
     );
+
+    const handleDownload = (media: IMedia) => {
+        downloadModalRef.current?.setDownloadMedia(media)
+        downloadModalRef.current?.toggle();
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -378,7 +388,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                             showActions
                             handleDownload={
                                 !item.availableLocal && item.availableRemote
-                                    ? () => downloadModalRef.current?.setDownloadMedia(item)
+                                    ? () => handleDownload(item)
                                     : undefined
                             }
                         />
@@ -402,8 +412,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             }
             <DownloadModal
                 ref={downloadModalRef}
-                onCompleted={() => { }}
-            // downloadAudio={}
             />
             <UpdateAudio
                 ref={updateAudioRef}

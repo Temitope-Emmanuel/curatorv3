@@ -63,11 +63,14 @@ export class TrackPlayerClass {
         isOwner,
       };
       await TrackPlayer.reset();
-      await TrackPlayer.add(this.currentMedia);
+      await TrackPlayer.add({
+        ...this.currentMedia,
+        artist: author
+      });
       await TrackPlayer.setRepeatMode(RepeatMode.Off);
       await TrackPlayer.setVolume(1);
     } catch (err) {
-      // console.log('there\'s been an err', { err });
+      console.log('there\'s been an err', { err });
     }
   };
 

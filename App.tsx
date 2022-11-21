@@ -25,6 +25,7 @@ import { persistor, store } from './src/store';
 import { useAppDispatch } from './src/hooks/redux';
 import { IUser } from './src/interfaces/auth';
 import { setUser, clearUser } from './src/store/Auth';
+import { UploadServiceProvider } from './src/providers/Uploading';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -81,7 +82,7 @@ const App = () => {
   );
 };
 
-const AppWithUploadService = PlayerServiceProvider(App);
+const AppWithUploadService = PlayerServiceProvider(UploadServiceProvider(App));
 
 export const Root = () => <Provider store={store}><PersistGate loading={null} persistor={persistor}><AppWithUploadService /></PersistGate></Provider>;
 

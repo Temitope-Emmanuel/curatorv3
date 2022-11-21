@@ -16,14 +16,14 @@ import Modal from './Modal';
 import { ModalRef } from '../../interfaces/modal';
 
 interface DownloadModalProps {
-  onCompleted: () => void;
+  // onCompleted: () => void;
 }
 
 export interface DownloadModalRef extends ModalRef {
   setDownloadMedia: (arg:IMedia) => void;
 }
 
-const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>(({ onCompleted }, ref) => {
+const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>(({}, ref) => {
   const dispatch = useAppDispatch();
   const [downloadMedia, setDownloadMedia] = useState<IMedia>(defaultAudio);
   const [showModal, toggleShowModal, setShowModal] = useToggle();

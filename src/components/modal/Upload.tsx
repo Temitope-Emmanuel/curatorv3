@@ -15,11 +15,11 @@ interface UploadModalProps {
     duration: number;
   }
 
-  interface UploadModalRef extends ModalRef {
+  export interface UploadModalRef extends ModalRef {
     setUploadMedia: (arg: IMedia) => void;
   }
 
-const UploadModal = forwardRef<ModalRef, UploadModalProps>(({ handleAccept: accept, duration, progress }, ref) => {
+const UploadModal = forwardRef<UploadModalRef, UploadModalProps>(({ handleAccept: accept, duration, progress }, ref) => {
     const [loading, toggleLoading] = useToggle();
     const [uploadMedia, setUploadMedia] = useState<IMedia>(defaultAudio);
     const [showModal, toggleShowModal, setShowModal] = useToggle();

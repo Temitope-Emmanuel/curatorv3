@@ -39,7 +39,7 @@ import SignoutIcon from './Signout';
 // import SplashScreen2Svg from './splashScreen2';
 import SplashScreen3Svg from './splashScreen3';
 // import TakingNoteIcon from './TakingNote';
-// import UploadIcon from './Upload';
+import UploadIcon from './Upload';
 
 export const IconImage: React.FC<
   Pick<IconProps, 'name' | 'width' | 'fill'>
@@ -125,8 +125,8 @@ export const IconImage: React.FC<
     	return <CloseIcon {...{ width, fill }} />;
     // case 'empty-snippet':
     // 	return <EmptySnippetIcon {...{ width }} />;
-    // case 'upload':
-    // 	return <UploadIcon {...{ width }} />;
+    case 'upload':
+    	return <UploadIcon {...{ width }} />;
     default:
       return <SplashScreen3Svg width={width} />;
   }
