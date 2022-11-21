@@ -14,8 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2';
 import { combineReducers } from 'redux';
 import { configureStore } from '@reduxjs/toolkit';
-// import authReducer from './Auth';
-// import mediaReducer from './Media';
+import authReducer from './Auth';
+import mediaReducer from './Media';
 // import uploadReducer from './Upload';
 // import noteReducer from './Notes';
 // import snippetReducer from './Snippets';
@@ -23,8 +23,8 @@ import appReducer from './App';
 
 const middlewares = [thunk];
 const rootReducer = combineReducers({
-//   auth: authReducer,
-//   media: mediaReducer,
+  auth: authReducer,
+  media: mediaReducer,
 //   upload: uploadReducer,
 //   notes: noteReducer,
 //   snippets: snippetReducer,

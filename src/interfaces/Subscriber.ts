@@ -1,0 +1,1 @@
+export type SubscriberType = () => void;

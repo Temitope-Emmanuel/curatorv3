@@ -1,4 +1,4 @@
-// import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
+import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 
 export interface IMedia {
   id: string;
@@ -18,7 +18,7 @@ export interface IMedia {
   isOwner: boolean;
 
   updatedAt?: string;
-//   uploadedAt?: FirebaseFirestoreTypes.FieldValue;
+  uploadedAt?: FirebaseFirestoreTypes.FieldValue;
   // For Media & Play feature
   position?: number;
   duration?: number;
