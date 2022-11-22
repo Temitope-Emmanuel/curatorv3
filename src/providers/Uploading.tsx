@@ -36,8 +36,12 @@ export const UploadServiceProvider = <P extends object>(Component: React.Compone
 
             useEffect(() => {
                 uploadModalRef.current?.setUploadMedia(currentUploadingMedia);
+                if(currentUploadingMedia.id){
+                    uploadModalRef.current?.toggleOpen();
+                }
             }, [currentUploadingMedia])
         const toggleShowUploadModal = () => {
+            console.log('we are here')
             uploadModalRef.current?.toggle();
         }
 

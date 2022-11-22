@@ -15,9 +15,7 @@ import ProgressBar from '../ProgressBarDef';
 import Modal from './Modal';
 import { ModalRef } from '../../interfaces/modal';
 
-interface DownloadModalProps {
-  // onCompleted: () => void;
-}
+interface DownloadModalProps {}
 
 export interface DownloadModalRef extends ModalRef {
   setDownloadMedia: (arg:IMedia) => void;

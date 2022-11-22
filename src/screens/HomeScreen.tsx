@@ -82,9 +82,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 const timeObj = item.duration
                     ? formatTime.current?.getTimeDuration(item.duration)
                     : undefined;
-                const formattedDuration =
-                    `${timeObj?.hours && timeObj.hours > 0 ? `${timeObj?.hours}h` : ''} ` +
-                    `${timeObj?.minutes}m`;
+                const formattedDuration = formatTime.current?.formatTime({
+                    Hour: timeObj?.Hour || 0,
+                    Minute: timeObj?.Minute || 0,
+                    Second: timeObj?.Second || 0
+                })
                 currentNormalized = {
                     ...currentNormalized,
                     [item.id]: {
@@ -121,6 +123,12 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         });
         setNormalizedData(currentNormalized);
     };
+
+    useEffect(() => {
+        return () => {
+            console.log('we are herer')
+        }
+    },[])
 
     const handleGetRemoteAudioFiles = useCallback(async () => {
         const newSubscriber = await getRemoteAudioFiles(setRemotePlaylist);
@@ -294,7 +302,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 onPress: () => {
                     updateAudioRef.current?.setMedia(selectedAudio);
                     updateAudioRef.current?.toggle();
-                    // toggleUpdateAudioModal();
                     handleCloseActionSheet();
                 },
                 disabled: !selectedAudio.availableLocal || !selectedAudio.isOwner,
@@ -302,7 +309,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             {
                 icon: 'upload',
                 label: 'Upload',
-                disabled: selectedAudio.availableRemote || !isAndroid,
+                disabled: selectedAudio.availableRemote,
                 onPress: currentUser?.email
                     ? () => {
                         handleSetUploadingMedia(selectedAudio);
@@ -328,8 +335,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     const navigateToPlayer = useCallback(
         (newMedia: IMedia) => {
+
             addNewTrack({ newMedia }).then(() => {
-                // navigation.navigate(ROUTES.PlayerScreen);
+                navigation.navigate(ROUTES.PlayerScreen, {
+                    media: newMedia
+                });
             });
         },
         [navigation, addNewTrack]

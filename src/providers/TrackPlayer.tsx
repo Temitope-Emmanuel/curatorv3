@@ -1,11 +1,14 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import TrackPlayer, {
   Capability,
   RepeatMode,
   State,
 } from 'react-native-track-player';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import createGenericContext from '../hooks/useGenericContext';
-import {IMedia} from '../interfaces/Media';
+import { IMedia } from '../interfaces/Media';
+import { defaultSnippet, ISnippet } from '../interfaces/snippet';
+import { getCurrentMedia, getPlaylist, updateCurrentMedia, updateMediaDetail } from '../store/Media';
 
 export class TrackPlayerClass {
   currentMedia: Omit<IMedia, 'owner'> | undefined;
@@ -21,11 +24,10 @@ export class TrackPlayerClass {
 
   start = async () => {
     await TrackPlayer.setupPlayer({
-      autoUpdateMetadata: true,
     });
     await TrackPlayer.updateOptions({
       backwardJumpInterval: 5,
-      // progressUpdateEventInterval: 2,
+      forwardJumpInterval: 5,
       capabilities: [
         Capability.Play,
         Capability.Pause,
@@ -67,7 +69,7 @@ export class TrackPlayerClass {
         ...this.currentMedia,
         artist: author
       });
-      await TrackPlayer.setRepeatMode(RepeatMode.Off);
+      // await TrackPlayer.setRepeatMode(RepeatMode.Off);
       await TrackPlayer.setVolume(1);
     } catch (err) {
       console.log('there\'s been an err', { err });
@@ -105,29 +107,33 @@ export class TrackPlayerClass {
 }
 
 const [usePlayerService, PlayerServiceContextProvider] = createGenericContext<{
-  //   playlist: React.MutableRefObject<TrackPlayerClass | null>;
-  //   updateMediaStatus:(arg: {duration: number; position: number}) => void;
-  //   currentMedia: IMedia;
-  addNewTrack:(arg: {
+  playlist: React.MutableRefObject<TrackPlayerClass | null>;
+  updateMediaStatus: (arg: { duration: number; position: number }) => void;
+  currentMedia: IMedia;
+  addNewTrack: (arg: {
     newMedia: IMedia;
     resetProgress?: boolean;
   }) => Promise<void>;
-  //   canPlayNext: boolean;
-  //   canPlayPrevious: boolean;
-  //   handlePlayNext: () => void;
-  //   handlePlayPrevious: () => void;
-  //   playingSnippet: boolean;
+  canPlayNext: boolean;
+  canPlayPrevious: boolean;
+  handlePlayNext: () => void;
+  handlePlayPrevious: () => void;
+  playingSnippet: boolean;
   startPlayer: () => void;
-  //   currentPlayingSnippet: ISnippet;
-  //   setCurrentPlayingSnippet: (arg: ISnippet) => void;
-  //   handlePlaySnippet: (arg: ISnippet) => void;
+  // currentPlayingSnippet: ISnippet;
+  // setCurrentPlayingSnippet: (arg: ISnippet) => void;
+  // handlePlaySnippet: (arg: ISnippet) => void;
 }>();
 
 export const PlayerServiceProvider = <P extends object>(
   Component: React.ComponentType<P>,
 ) =>
-  function Provider({...props}) {
+  function Provider({ ...props }) {
+    const dispatch = useAppDispatch();
     const playlist = useRef<TrackPlayerClass | null>(null);
+    const currentMedia = useAppSelector(getCurrentMedia);
+    const playlistMedia = useAppSelector(getPlaylist);
+    const [currentPlayingSnippet, setCurrentPlayingSnippet] = useState<ISnippet>(defaultSnippet);
 
     const startPlayer = useCallback(() => {
       if (!playlist.current) {
@@ -143,7 +149,24 @@ export const PlayerServiceProvider = <P extends object>(
       [],
     );
 
-    const addNewTrack = useCallback(
+    const playingSnippet = useMemo(
+      () => !!currentPlayingSnippet.id.length,
+      [currentPlayingSnippet]
+    );
+    const currentMediaIdx = useMemo(
+      () => playlistMedia.findIndex((item) => currentMedia.id === item.id),
+      [currentMedia.id, playlistMedia]
+    );
+    const canPlayPrevious = useMemo(
+      () => !!playlistMedia[currentMediaIdx - 1] || playingSnippet,
+      [playlistMedia, currentMediaIdx, playingSnippet]
+    );
+    const canPlayNext = useMemo(
+      () => !!playlistMedia[currentMediaIdx + 1] || playingSnippet,
+      [playlistMedia, currentMediaIdx, playingSnippet]
+    );
+
+    const addNewTrack =
       async ({
         newMedia,
         resetProgress = true,
@@ -151,23 +174,64 @@ export const PlayerServiceProvider = <P extends object>(
         newMedia: IMedia;
         resetProgress?: boolean;
       }) => {
-        //   if (currentMedia.id !== newMedia.id) {
-        //     dispatch(updateCurrentMedia(newMedia));
-        //   }
-        await playlist.current?.addNewTrack(newMedia);
-        if (newMedia.position && newMedia.position > 0) {
-          await playlist.current?.seek(newMedia.position);
-        } else {
-          await playlist.current?.play();
+        try {
+          if (currentMedia.id !== newMedia.id) {
+            dispatch(updateCurrentMedia(newMedia));
+          }
+          await playlist.current?.addNewTrack(newMedia);
+          if (newMedia.position && newMedia.position > 0) {
+            await playlist.current?.seek(newMedia.position);
+          } else {
+            await playlist.current?.play();
+          }
+        } catch (err) {
+          console.log('this is the err', err)
         }
+      };
+
+    const handlePlayNext = useCallback(() => {
+      if (canPlayNext) {
+        addNewTrack({ newMedia: playlistMedia[currentMediaIdx + 1] });
+      }
+    }, [canPlayNext, addNewTrack, playlistMedia, currentMediaIdx]);
+    const handlePlayPrevious = useCallback(() => {
+      if (canPlayPrevious) {
+        addNewTrack({ newMedia: playlistMedia[currentMediaIdx - 1] });
+      }
+    }, [canPlayPrevious, addNewTrack, playlistMedia, currentMediaIdx]);
+
+    const updateMediaStatus = useCallback(
+      async ({
+        duration: newDuration,
+        position: newProgress,
+      }: {
+        duration: number;
+        position: number;
+      }) => {
+        dispatch(
+          updateMediaDetail({
+            duration: newDuration,
+            progress: newProgress,
+            id: currentMedia.id,
+          })
+        );
       },
-      [playlist],
+      [dispatch, currentMedia]
     );
+
     return (
       <PlayerServiceContextProvider
         value={{
           startPlayer,
           addNewTrack,
+          canPlayNext,
+          canPlayPrevious,
+          currentMedia,
+          handlePlayNext,
+          handlePlayPrevious,
+          playingSnippet,
+          playlist,
+          updateMediaStatus
         }}>
         <Component {...(props as P)} />
       </PlayerServiceContextProvider>

@@ -9,6 +9,10 @@ import { IMedia } from '../interfaces/Media';
 // import { ISnippet } from '../interfaces/Snippet';
 import { getAuth } from '../store/Auth';
 import useToast from '../hooks/useToast';
+import { ISnippet } from '../interfaces/snippet';
+import { INote } from '../interfaces/note';
+import { RemoteNote } from '../interfaces/remoteData';
+import { IClique } from '../interfaces/clique';
 
 const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
   // First check if it exist
@@ -135,34 +139,34 @@ const createCliques = (currentUser: IUser) => (currentMedia: IMedia) => {
     });
 };
 
-// const getMediaClique =
-//   (currentUser: IUser) => (currentMedia: IMedia, setCliques: (arg: IClique[]) => void) =>
-//     firestore()
-//       .collection('media')
-//       .doc(currentMedia.id)
-//       .collection('cliques')
-//       .onSnapshot((docs) => {
-//         const newCliques: IClique[] = [];
-//         docs.docs.forEach((item) => {
-//           if (item.exists) {
-//             const clique = item.data() as IClique;
-//             newCliques.push({
-//               id: item.id,
-//               members: clique.members,
-//               name: clique.name,
-//               createdAt: clique.createdAt,
-//               // check if the currentuser is the owner of the media
-//               type:
-//                 item.id === currentMedia.owner.id
-//                   ? 'Public'
-//                   : item.id === currentUser.uid
-//                   ? 'Personal'
-//                   : 'Secret',
-//             });
-//           }
-//         });
-//         setCliques(newCliques);
-//       });
+const getMediaClique =
+  (currentUser: IUser) => (currentMedia: IMedia, setCliques: (arg: IClique[]) => void) =>
+    firestore()
+      .collection('media')
+      .doc(currentMedia.id)
+      .collection('cliques')
+      .onSnapshot((docs) => {
+        const newCliques: IClique[] = [];
+        docs.docs.forEach((item) => {
+          if (item.exists) {
+            const clique = item.data() as IClique;
+            newCliques.push({
+              id: item.id,
+              members: clique.members,
+              name: clique.name,
+              createdAt: clique.createdAt,
+              // check if the currentuser is the owner of the media
+              type:
+                item.id === currentMedia.owner.id
+                  ? 'Public'
+                  : item.id === currentUser.uid
+                  ? 'Personal'
+                  : 'Secret',
+            });
+          }
+        });
+        setCliques(newCliques);
+      });
 
 const sendInvitationToClique =
   (currentUser: IUser) => async (arg: { email: string; currentMedia: IMedia }) => {
@@ -212,54 +216,54 @@ const saveFileToCollection = (arg: IUser) => (downloadUrl: string, media: IMedia
     });
 };
 
-// const handleSaveSnippetRemote =
-//   (currentUser: IUser) =>
-//   (
-//     { description, formatTime, id, reactions, time }: Omit<ISnippet, 'owner'>,
-//     currentMedia: IMedia
-//   ) =>
-//     firestore()
-//       .collection('media')
-//       .doc(currentMedia.id)
-//       .collection('snippets')
-//       .doc(currentUser?.uid)
-//       .set(
-//         {
-//           data: {
-//             [id]: {
-//               description,
-//               formatTime,
-//               id,
-//               reactions,
-//               time,
-//             },
-//           },
-//         },
-//         { merge: true }
-//       );
+const handleSaveSnippetRemote =
+  (currentUser: IUser) =>
+    (
+      { description, formatTime, id, reactions, time }: Omit<ISnippet, 'owner'>,
+      currentMedia: IMedia
+    ) =>
+      firestore()
+        .collection('media')
+        .doc(currentMedia.id)
+        .collection('snippets')
+        .doc(currentUser?.uid)
+        .set(
+          {
+            data: {
+              [id]: {
+                description,
+                formatTime,
+                id,
+                reactions,
+                time,
+              },
+            },
+          },
+          { merge: true }
+        );
 
-// const handleSaveNoteRemote =
-//   (currentUser: IUser) =>
-//   ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) =>
-//     firestore()
-//       .collection('media')
-//       .doc(currentMedia.id)
-//       .collection('notes')
-//       .doc(currentUser?.uid)
-//       .set(
-//         {
-//           data: {
-//             [id]: {
-//               description,
-//               id,
-//               reactions,
-//               time,
-//               timestamp,
-//             },
-//           },
-//         },
-//         { merge: true }
-//       );
+const handleSaveNoteRemote =
+  (currentUser: IUser) =>
+    ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) =>
+      firestore()
+        .collection('media')
+        .doc(currentMedia.id)
+        .collection('notes')
+        .doc(currentUser?.uid)
+        .set(
+          {
+            data: {
+              [id]: {
+                description,
+                id,
+                reactions,
+                time,
+                timestamp,
+              },
+            },
+          },
+          { merge: true }
+        );
 
 const getRemoteAudioFilesByEmail =
   (currentUser: IUser) => async (setMedia: (arg: IMedia[]) => void) =>
@@ -306,40 +310,40 @@ const getRemoteAudioFilesByEmail =
           });
       });
 
-// const getAllMediaNote = ({
-//   currentMedia,
-//   setNote,
-// }: {
-//   usersIds: string[];
-//   currentMedia: IMedia['id'];
-//   setNote: (arg: RemoteNote[]) => void;
-// }) =>
-//   firestore()
-//     .collection('media')
-//     .doc(currentMedia)
-//     .collection('notes')
-//     .onSnapshot((data) => {
-//       if (!data.empty) {
-//         const remoteUserNotes = data.docs.map((item) => {
-//           const doc = item.data();
-//           return {
-//             id: item.id,
-//             data: Object.entries(doc.data).reduce(
-//               (acc, [, value]) => ({
-//                 ...acc,
-//                 [(value as INote).id]: {
-//                   ...(value as INote),
-//                   owner: doc.user,
-//                 },
-//               }),
-//               {}
-//             ),
-//             user: doc.user,
-//           };
-//         });
-//         setNote(remoteUserNotes);
-//       }
-//     });
+const getAllMediaNote = ({
+  currentMedia,
+  setNote,
+}: {
+  usersIds: string[];
+  currentMedia: IMedia['id'];
+  setNote: (arg: RemoteNote[]) => void;
+}) =>
+  firestore()
+    .collection('media')
+    .doc(currentMedia)
+    .collection('notes')
+    .onSnapshot((data) => {
+      if (!data.empty) {
+        const remoteUserNotes = data.docs.map((item) => {
+          const doc = item.data();
+          return {
+            id: item.id,
+            data: Object.entries(doc.data).reduce(
+              (acc, [, value]) => ({
+                ...acc,
+                [(value as INote).id]: {
+                  ...(value as INote),
+                  owner: doc.user,
+                },
+              }),
+              {}
+            ),
+            user: doc.user,
+          };
+        });
+        setNote(remoteUserNotes);
+      }
+    });
 
 // const getAllMediaSnippet = ({
 //   currentMedia,
@@ -376,25 +380,25 @@ const getRemoteAudioFilesByEmail =
 //       }
 //     });
 
-// const updateNoteReactions = ({
-//   mediaId,
-//   note,
-//   userId,
-// }: {
-//   mediaId: string;
-//   userId: string;
-//   note: Omit<INote, 'owner'>;
-// }) => {
-//   const updateKey = `data.${note.id}`;
-//   return firestore()
-//     .collection('media')
-//     .doc(mediaId)
-//     .collection('notes')
-//     .doc(userId)
-//     .update({
-//       [updateKey]: note,
-//     });
-// };
+const updateNoteReactions = ({
+  mediaId,
+  note,
+  userId,
+}: {
+  mediaId: string;
+  userId: string;
+  note: Omit<INote, 'owner'>;
+}) => {
+  const updateKey = `data.${note.id}`;
+  return firestore()
+    .collection('media')
+    .doc(mediaId)
+    .collection('notes')
+    .doc(userId)
+    .update({
+      [updateKey]: note,
+    });
+};
 
 // const updateSnippetReactions = ({
 //   mediaId,
@@ -419,20 +423,20 @@ const getRemoteAudioFilesByEmail =
 export const useFirestore = () => {
   const { currentUser } = useAppSelector(getAuth);
   return {
-    // handleSaveSnippetRemote: handleSaveSnippetRemote(currentUser as IUser),
+    handleSaveSnippetRemote: handleSaveSnippetRemote(currentUser as IUser),
     saveFileToCollection: saveFileToCollection(currentUser as IUser),
-    // handleSaveNoteRemote: handleSaveNoteRemote(currentUser as IUser),
+    handleSaveNoteRemote: handleSaveNoteRemote(currentUser as IUser),
     getRemoteAudioFiles: getRemoteAudioFilesByEmail(currentUser as IUser),
     createSnippetRemote: createSnippetRemote(currentUser as IUser),
     createNoteRemote: createNoteRemote(currentUser as IUser),
-    // getMediaClique: getMediaClique(currentUser as IUser),
+    getMediaClique: getMediaClique(currentUser as IUser),
     createCliques: createCliques(currentUser as IUser),
     sendInvitationToClique: sendInvitationToClique(currentUser as IUser),
     // getAllMediaSnippet,
-    // getAllMediaNote,
+    getAllMediaNote,
     createNewUser,
     findUser,
-    // updateNoteReactions,
+    updateNoteReactions,
     // updateSnippetReactions,
   };
 };

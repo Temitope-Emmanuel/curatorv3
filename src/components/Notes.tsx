@@ -1,0 +1,106 @@
+import React, { memo, useMemo } from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { TEXT_PRIMARY } from '../constants/colors';
+import { BaseDatum } from '../interfaces/datum';
+import { INote } from '../interfaces/note';
+import { ReactionType } from '../interfaces/reaction';
+import { utilStyles } from '../utils/styles';
+import Reactions from './Reactions';
+
+interface NoteProps extends INote, BaseDatum {
+  handlePress: (arg: { time: number }) => void;
+}
+
+const Notes: React.FC<NoteProps> = ({
+  owner,
+  reactions,
+  timestamp,
+  handleReactions: handleAddReaction,
+  description,
+  id,
+  handlePress,
+  handleDelete,
+  time,
+  isAuthor,
+  currentUser,
+}) => {
+  const mappedReaction = useMemo(
+    () =>
+      Object.entries(reactions).reduce(
+        (acc, [userId, reaction]) => {
+          acc[reaction] = acc[reaction].concat(userId);
+          return acc;
+        },
+        {
+          'add-reaction': [],
+          'local-fire-department': [],
+          favorite: [],
+          recommend: [],
+        } as {
+          [key in ReactionType]: string[];
+        }
+      ),
+    [reactions]
+  );
+
+  const handleReaction =
+    ({ noteId, userId }: { noteId: string; userId: string }) =>
+    (reaction: ReactionType) => {
+      handleAddReaction({ id: noteId, userId, reaction });
+    };
+
+  return (
+    <TouchableOpacity
+      style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse' }]}
+      onPress={() => handlePress({ time })}
+      onLongPress={isAuthor ? () => handleDelete(id) : undefined}
+    >
+      {owner.photoURL && owner.id !== currentUser && (
+        <Image
+          source={{ uri: owner.photoURL }}
+          style={[utilStyles.img, isAuthor ? utilStyles.mr13 : utilStyles.ml13]}
+        />
+      )}
+      <View style={styles.reactionContainer}>
+        <View
+          style={{
+            marginBottom: 5,
+          }}
+        >
+          <Text style={styles.notesTimeStamp}>{timestamp}</Text>
+          {description.length ? (
+            <Text style={styles.notesDescription}>{description}</Text>
+          ) : undefined}
+        </View>
+        <Reactions
+          currentUser={currentUser}
+          style={utilStyles.mrAuto}
+          handleReaction={handleReaction({ noteId: id, userId: owner.id })}
+          reactions={mappedReaction}
+        />
+      </View>
+    </TouchableOpacity>
+  );
+};
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'flex-start',
+    marginVertical: 2,
+    justifyContent: 'flex-start',
+  },
+  reactionContainer: {
+    marginBottom: 10,
+    flex: 1,
+  },
+  notesTimeStamp: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: TEXT_PRIMARY,
+  },
+  notesDescription: {
+    color: TEXT_PRIMARY,
+    fontSize: 14,
+  },
+});
+
+export default memo(Notes);

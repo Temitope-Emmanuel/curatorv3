@@ -17,8 +17,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './Auth';
 import mediaReducer from './Media';
 import uploadReducer from './Upload';
-// import noteReducer from './Notes';
-// import snippetReducer from './Snippets';
+import noteReducer from './Notes';
+import snippetReducer from './Snippets';
 import appReducer from './App';
 
 const middlewares = [thunk];
@@ -26,8 +26,8 @@ const rootReducer = combineReducers({
   auth: authReducer,
   media: mediaReducer,
   upload: uploadReducer,
-//   notes: noteReducer,
-//   snippets: snippetReducer,
+  notes: noteReducer,
+  snippets: snippetReducer,
   app: appReducer,
 });
 

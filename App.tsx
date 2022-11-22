@@ -11,14 +11,14 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList } from './src/interfaces/navigation';
 import * as ROUTES from './src/constants/routes';
 
 import usePlayerService, {
   PlayerServiceProvider,
 } from './src/providers/TrackPlayer';
-import { HomeScreen } from './src/screens';
+import { HomeScreen, PlayerScreen } from './src/screens';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from './src/store';
@@ -26,13 +26,14 @@ import { useAppDispatch } from './src/hooks/redux';
 import { IUser } from './src/interfaces/auth';
 import { setUser, clearUser } from './src/store/Auth';
 import { UploadServiceProvider } from './src/providers/Uploading';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
+const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
   const dispatch = useAppDispatch();
   const { startPlayer } = usePlayerService();
-  
+
   const onAuthStateChanged = (user: IUser | null) => {
     if (user) {
       const {
@@ -73,10 +74,11 @@ const App = () => {
       <Stack.Navigator
         initialRouteName={ROUTES.HomeScreen}
         screenOptions={{
-          headerShown: false
+          headerShown: false,
         }}
       >
         <Stack.Screen name={ROUTES.HomeScreen} component={HomeScreen} />
+        <Stack.Screen name={ROUTES.PlayerScreen} component={PlayerScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
@@ -84,6 +86,6 @@ const App = () => {
 
 const AppWithUploadService = PlayerServiceProvider(UploadServiceProvider(App));
 
-export const Root = () => <Provider store={store}><PersistGate loading={null} persistor={persistor}><AppWithUploadService /></PersistGate></Provider>;
+export const Root = () => <GestureHandlerRootView style={{ flex: 1 }}><Provider store={store}><PersistGate loading={null} persistor={persistor}><AppWithUploadService /></PersistGate></Provider></GestureHandlerRootView>
 
 export default Root;
