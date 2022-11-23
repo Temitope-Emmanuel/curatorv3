@@ -1,13 +1,13 @@
 /* eslint-disable react/no-unused-prop-types */
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import * as ROUTES from '../constants/routes';
 import { RootStackParamList } from '../interfaces/navigation';
 import IconButton from './IconButton';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PlayerScreen'>;
+type Props = StackScreenProps<RootStackParamList, 'PlayerScreen'>;
 
 type NavigationProps = Props['navigation'];
 interface SearchBarProps {

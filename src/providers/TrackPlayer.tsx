@@ -1,14 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import TrackPlayer, {
   Capability,
-  RepeatMode,
   State,
 } from 'react-native-track-player';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import createGenericContext from '../hooks/useGenericContext';
 import useToggle from '../hooks/useToggle';
 import { IMedia } from '../interfaces/Media';
-import { defaultSnippet, ISnippet } from '../interfaces/snippet';
 import { getCurrentMedia, getPlaylist, updateCurrentMedia, updateMediaDetail } from '../store/Media';
 
 export class TrackPlayerClass {
@@ -71,7 +69,7 @@ export class TrackPlayerClass {
         artist: author
       });
       // await TrackPlayer.setRepeatMode(RepeatMode.Off);
-      await TrackPlayer.setVolume(1);
+      // await TrackPlayer.setVolume(1);
     } catch (err) {
       console.log('there\'s been an err', { err });
     }

@@ -28,19 +28,18 @@ import { SubscriberType } from '../interfaces/Subscriber';
 import AudioDisplay from '../components/AudioDisplay';
 import toast from '../hooks/useToast';
 import ActionSheet, { ActionType } from '../components/ActionSheet';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { StackScreenProps } from '@react-navigation/stack';
 import { RootStackParamList } from '../interfaces/navigation';
 import * as ROUTES from '../constants/routes';
 import useUploadService from '../providers/Uploading';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'HomeScreen'>;
+type Props = StackScreenProps<RootStackParamList, 'HomeScreen'>;
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const dispatch = useAppDispatch();
-    const {duration, position} = useProgress();
     const { addNewTrack } = usePlayerService();
     const { toggleShowUploadModal, handleSetUploadingMedia } = useUploadService();
-    
+
     const tagContainerRef = useRef<ScrollView>(null);
     const updateAudioRef = useRef<UpdateAudioRef>(null);
     const downloadModalRef = useRef<DownloadModalRef>(null);
@@ -123,12 +122,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         });
         setNormalizedData(currentNormalized);
     };
-
-    useEffect(() => {
-        return () => {
-            console.log('we are herer')
-        }
-    },[])
 
     const handleGetRemoteAudioFiles = useCallback(async () => {
         const newSubscriber = await getRemoteAudioFiles(setRemotePlaylist);
@@ -218,8 +211,6 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         },
         [dispatch]
     );
-
-    console.log({duration, position})
 
     const handleEditAudio = useCallback(
         ({ author, description, tags: updatedTags, id, title, url }: IMedia) => {

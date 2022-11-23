@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackScreenProps } from "@react-navigation/stack";
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { BG_PRIMARY, BG_TERTIARY, TEXT_PRIMARY } from "../constants/colors";
@@ -22,7 +22,7 @@ import toast from '../hooks/useToast';
 import useFirestore from '../utils/firestore';
 import PlayerDetailScreen from '../components/PlayerDetailScreen';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PlayerScreen'>;
+type Props = StackScreenProps<RootStackParamList, 'PlayerScreen'>;
 
 export type PlayerScreenType = 'Snippet' | 'Note';
 

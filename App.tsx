@@ -26,7 +26,6 @@ import { useAppDispatch } from './src/hooks/redux';
 import { IUser } from './src/interfaces/auth';
 import { setUser, clearUser } from './src/store/Auth';
 import { UploadServiceProvider } from './src/providers/Uploading';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -86,6 +85,5 @@ const App = () => {
 
 const AppWithUploadService = PlayerServiceProvider(UploadServiceProvider(App));
 
-export const Root = () => <GestureHandlerRootView style={{ flex: 1 }}><Provider store={store}><PersistGate loading={null} persistor={persistor}><AppWithUploadService /></PersistGate></Provider></GestureHandlerRootView>
-
+export const Root = () => <Provider store={store}><PersistGate loading={null} persistor={persistor}><AppWithUploadService /></PersistGate></Provider>
 export default Root;
