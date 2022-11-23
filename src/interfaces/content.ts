@@ -34,7 +34,7 @@ export type Icons = 'SplashScreen1' | 'SplashScreen2' | 'SplashScreen3' | 'add'
   | 'pause'
   | 'check'
   | 'close'
-//   | 'empty-snippet'
+  | 'empty-snippet'
   | 'upload';
 
 export interface IconProps {

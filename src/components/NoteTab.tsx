@@ -3,25 +3,25 @@ import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { TEXT_TERTIARY } from '../constants/colors';
 import { INote } from '../interfaces/note';
 import { BaseTabProps } from '../interfaces/tab';
-import usePlayerService from '../providers/TrackPlayer';
+import { TrackPlayerClass } from '../providers/TrackPlayer';
 import { RootState } from '../store';
 import IconImage from './Icon';
 import DeleteModal, { DeleteAudioRef } from './modal/DeleteModal';
 import Notes from './Notes';
 
 interface NoteTabProps extends BaseTabProps {
+  playlist: TrackPlayerClass | null;
   currentNotes: RootState['notes']['currentNotes'];
 }
 
-const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions }) => {
-  const { playlist } = usePlayerService();
+const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions, playlist }) => {
   const handleDeleteRef = useRef<DeleteAudioRef>(null);
   const mappedNotes = useMemo(
     () => Object.values(currentNotes.notes).sort((a, b) => a.time - b.time),
     [currentNotes.notes]
   );
   const handleNotePress = (seekNote: { time: number }) => {
-    playlist.current?.seek(seekNote.time);
+    playlist?.seek(seekNote.time);
   };
 
   const handleDelete = (id: string) => {
@@ -47,8 +47,6 @@ const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReac
       {...{ description, id, owner, reactions, time, timestamp, handleDelete, handleReactions }}
     />
   );
-
-  console.log('we r')
 
   return (
     <>

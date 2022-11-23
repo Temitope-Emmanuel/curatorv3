@@ -33,7 +33,7 @@ export type PlayerTab = {
 
 const PlayerScreen: React.FC<Props> = ({ route }) => {
     const { currentUser } = useAppSelector(getAuth);
-    const { addNewTrack } = usePlayerService();
+    const { addNewTrack, playlist } = usePlayerService();
     const currentMedia = useAppSelector(getCurrentMedia);
     const { sendInvitationToClique, getMediaClique } = useFirestore();
     const slideRef = useRef<FlatList<PlayerTab>>(null);
@@ -44,10 +44,10 @@ const PlayerScreen: React.FC<Props> = ({ route }) => {
 
     useEffect(() => {
         if (currentMedia.id) {
-          getMediaClique(currentMedia, setClique);
+            getMediaClique(currentMedia, setClique);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-      }, [currentMedia.id]);
+    }, [currentMedia.id]);
 
     const currentClique = useMemo(() => {
         if (clique.length) {
@@ -119,13 +119,14 @@ const PlayerScreen: React.FC<Props> = ({ route }) => {
             </View>
             <View style={styles.detailContainer}>
                 <PlayerDetailScreen
-                {...{
-                setCurrentTab,
-                slideRef,
-                currentClique,
-                currentUser,
-                }}
-            />
+                    playlist={playlist.current}
+                    {...{
+                        setCurrentTab,
+                        slideRef,
+                        currentClique,
+                        currentUser,
+                    }}
+                />
                 <ToggleContainer
                     {...{
                         currentTab,

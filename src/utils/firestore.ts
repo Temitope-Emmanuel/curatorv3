@@ -2,16 +2,12 @@ import firestore from '@react-native-firebase/firestore';
 import allSettled from 'promise.allsettled';
 import { useAppSelector } from '../hooks/redux';
 import { IUser } from '../interfaces/auth';
-// import { IClique } from '../interfaces/Clique';
 import { IMedia } from '../interfaces/Media';
-// import { INote } from '../interfaces/Note';
-// import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
-// import { ISnippet } from '../interfaces/Snippet';
 import { getAuth } from '../store/Auth';
 import useToast from '../hooks/useToast';
 import { ISnippet } from '../interfaces/snippet';
 import { INote } from '../interfaces/note';
-import { RemoteNote } from '../interfaces/remoteData';
+import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
 import { IClique } from '../interfaces/clique';
 
 const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
@@ -345,40 +341,40 @@ const getAllMediaNote = ({
       }
     });
 
-// const getAllMediaSnippet = ({
-//   currentMedia,
-//   setSnippet,
-// }: {
-//   currentMedia: IMedia['id'];
-//   usersIds: string[];
-//   setSnippet: (arg: RemoteSnippet[]) => void;
-// }) =>
-//   firestore()
-//     .collection('media')
-//     .doc(currentMedia)
-//     .collection('snippets')
-//     .onSnapshot((data) => {
-//       if (!data.empty) {
-//         const remoteUserSnippets = data.docs.map((item) => {
-//           const doc = item.data();
-//           return {
-//             id: item.id,
-//             data: Object.entries(doc.data).reduce(
-//               (acc, [, value]) => ({
-//                 ...acc,
-//                 [(value as ISnippet).id]: {
-//                   ...(value as ISnippet),
-//                   owner: doc.user,
-//                 },
-//               }),
-//               {}
-//             ),
-//             user: doc.user,
-//           };
-//         });
-//         setSnippet(remoteUserSnippets);
-//       }
-//     });
+const getAllMediaSnippet = ({
+  currentMedia,
+  setSnippet,
+}: {
+  currentMedia: IMedia['id'];
+  usersIds: string[];
+  setSnippet: (arg: RemoteSnippet[]) => void;
+}) =>
+  firestore()
+    .collection('media')
+    .doc(currentMedia)
+    .collection('snippets')
+    .onSnapshot((data) => {
+      if (!data.empty) {
+        const remoteUserSnippets = data.docs.map((item) => {
+          const doc = item.data();
+          return {
+            id: item.id,
+            data: Object.entries(doc.data).reduce(
+              (acc, [, value]) => ({
+                ...acc,
+                [(value as ISnippet).id]: {
+                  ...(value as ISnippet),
+                  owner: doc.user,
+                },
+              }),
+              {}
+            ),
+            user: doc.user,
+          };
+        });
+        setSnippet(remoteUserSnippets);
+      }
+    });
 
 const updateNoteReactions = ({
   mediaId,
@@ -400,25 +396,25 @@ const updateNoteReactions = ({
     });
 };
 
-// const updateSnippetReactions = ({
-//   mediaId,
-//   snippet,
-//   userId,
-// }: {
-//   mediaId: string;
-//   userId: string;
-//   snippet: Omit<ISnippet, 'owner'>;
-// }) => {
-//   const updateKey = `data.${snippet.id}`;
-//   return firestore()
-//     .collection('media')
-//     .doc(mediaId)
-//     .collection('snippets')
-//     .doc(userId)
-//     .update({
-//       [updateKey]: snippet,
-//     });
-// };
+const updateSnippetReactions = ({
+  mediaId,
+  snippet,
+  userId,
+}: {
+  mediaId: string;
+  userId: string;
+  snippet: Omit<ISnippet, 'owner'>;
+}) => {
+  const updateKey = `data.${snippet.id}`;
+  return firestore()
+    .collection('media')
+    .doc(mediaId)
+    .collection('snippets')
+    .doc(userId)
+    .update({
+      [updateKey]: snippet,
+    });
+};
 
 export const useFirestore = () => {
   const { currentUser } = useAppSelector(getAuth);
@@ -432,12 +428,12 @@ export const useFirestore = () => {
     getMediaClique: getMediaClique(currentUser as IUser),
     createCliques: createCliques(currentUser as IUser),
     sendInvitationToClique: sendInvitationToClique(currentUser as IUser),
-    // getAllMediaSnippet,
+    getAllMediaSnippet,
     getAllMediaNote,
     createNewUser,
     findUser,
     updateNoteReactions,
-    // updateSnippetReactions,
+    updateSnippetReactions,
   };
 };
 

@@ -6,6 +6,7 @@ import TrackPlayer, {
 } from 'react-native-track-player';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import createGenericContext from '../hooks/useGenericContext';
+import useToggle from '../hooks/useToggle';
 import { IMedia } from '../interfaces/Media';
 import { defaultSnippet, ISnippet } from '../interfaces/snippet';
 import { getCurrentMedia, getPlaylist, updateCurrentMedia, updateMediaDetail } from '../store/Media';
@@ -120,9 +121,8 @@ const [usePlayerService, PlayerServiceContextProvider] = createGenericContext<{
   handlePlayPrevious: () => void;
   playingSnippet: boolean;
   startPlayer: () => void;
-  // currentPlayingSnippet: ISnippet;
-  // setCurrentPlayingSnippet: (arg: ISnippet) => void;
   // handlePlaySnippet: (arg: ISnippet) => void;
+  setPlayingSnippet: (arg: boolean) => void;
 }>();
 
 export const PlayerServiceProvider = <P extends object>(
@@ -133,7 +133,7 @@ export const PlayerServiceProvider = <P extends object>(
     const playlist = useRef<TrackPlayerClass | null>(null);
     const currentMedia = useAppSelector(getCurrentMedia);
     const playlistMedia = useAppSelector(getPlaylist);
-    const [currentPlayingSnippet, setCurrentPlayingSnippet] = useState<ISnippet>(defaultSnippet);
+    const [playingSnippet, , setPlayingSnippet] = useToggle();
 
     const startPlayer = useCallback(() => {
       if (!playlist.current) {
@@ -147,11 +147,6 @@ export const PlayerServiceProvider = <P extends object>(
         playlist.current?.stop();
       },
       [],
-    );
-
-    const playingSnippet = useMemo(
-      () => !!currentPlayingSnippet.id.length,
-      [currentPlayingSnippet]
     );
     const currentMediaIdx = useMemo(
       () => playlistMedia.findIndex((item) => currentMedia.id === item.id),
@@ -231,6 +226,7 @@ export const PlayerServiceProvider = <P extends object>(
           handlePlayPrevious,
           playingSnippet,
           playlist,
+          setPlayingSnippet,
           updateMediaStatus
         }}>
         <Component {...(props as P)} />

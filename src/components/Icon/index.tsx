@@ -12,7 +12,7 @@ import DownloadIcon from './Download';
 import DropdownIcon from './Dropdown';
 import EditBorderIcon from './EditBorder';
 import EmptyAudioIcon from './EmptyAudio';
-// import EmptySnippetIcon from './EmptySnippet';
+import EmptySnippetIcon from './EmptySnippet';
 import FastForwardIcon from './FastForward';
 import FastRewindIcon from './FastRewind';
 import FavoriteIcon from './Favorite';
@@ -123,8 +123,8 @@ export const IconImage: React.FC<
     	return <CheckIcon {...{ width }} />;
     case 'close':
     	return <CloseIcon {...{ width, fill }} />;
-    // case 'empty-snippet':
-    // 	return <EmptySnippetIcon {...{ width }} />;
+    case 'empty-snippet':
+    	return <EmptySnippetIcon {...{ width }} />;
     case 'upload':
     	return <UploadIcon {...{ width }} />;
     default:
