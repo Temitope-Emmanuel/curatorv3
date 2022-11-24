@@ -9,6 +9,7 @@ import { RemoteNote, RemoteSnippet } from "../interfaces/remoteData";
 import { ICurrentSnippet } from "../interfaces/snippet";
 import { SubscriberType } from "../interfaces/Subscriber";
 import { TrackPlayerClass } from "../providers/TrackPlayer";
+import { playerScreenContent } from "../screens/data";
 import { PlayerScreenType, PlayerTab } from "../screens/PlayerScreen";
 import { getCurrentMedia } from "../store/Media";
 import { addNoteReaction, getCurrentNotes, loadNotes } from "../store/Notes";
@@ -159,6 +160,7 @@ export const PlayerDetailScreen: React.FC<{
       {
       ...{ setCurrentTab, slideRef }
       }
+      data={playerScreenContent}
       renderItem={({ item: { type } }) => (
         <View style={{ paddingHorizontal: 15, width: width - 30 }}>
           {type === 'Note' ? (

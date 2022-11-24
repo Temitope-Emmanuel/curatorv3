@@ -18,7 +18,7 @@ import * as ROUTES from './src/constants/routes';
 import usePlayerService, {
   PlayerServiceProvider,
 } from './src/providers/TrackPlayer';
-import { HomeScreen, PlayerScreen } from './src/screens';
+import { HomeScreen, PlayerScreen, SplashScreen } from './src/screens';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistor, store } from './src/store';
@@ -71,12 +71,13 @@ const App = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName={ROUTES.HomeScreen}
+        initialRouteName={ROUTES.SplashScreen}
         screenOptions={{
           headerShown: false,
         }}
       >
         <Stack.Screen name={ROUTES.HomeScreen} component={HomeScreen} />
+        <Stack.Screen name={ROUTES.SplashScreen} component={SplashScreen} />
         <Stack.Screen name={ROUTES.PlayerScreen} component={PlayerScreen} />
       </Stack.Navigator>
     </NavigationContainer>
