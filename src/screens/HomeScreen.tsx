@@ -303,9 +303,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 disabled: selectedAudio.availableRemote,
                 onPress: currentUser?.email
                     ? () => {
-                        handleSetUploadingMedia(selectedAudio);
+                        updateAudioRef.current?.setMedia(selectedAudio);
+                        updateAudioRef.current?.toggleOpen();
+                        // handleSetUploadingMedia(selectedAudio);
                         handleCloseActionSheet();
-                        toggleShowUploadModal();
+                        // toggleShowUploadModal();
                     }
                     : () => {
                         handleCloseActionSheet();
@@ -318,6 +320,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         ],
         [
             selectedAudio,
+            updateAudioRef,
             currentUser?.email,
             dispatch,
             handleCloseActionSheet,
