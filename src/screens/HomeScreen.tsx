@@ -349,7 +349,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             <Header />
             {playlist.length ? (
                 <View style={styles.tagMainContainer}>
-                    <ScrollView ref={tagContainerRef} alwaysBounceHorizontal horizontal style={styles.tagContainer}>
+                    <ScrollView ref={tagContainerRef} alwaysBounceHorizontal horizontal showsHorizontalScrollIndicator={false} style={styles.tagContainer}>
                         {tags.map((item) => (
                             <Chips
                                 label={item.value}
