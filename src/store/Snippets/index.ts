@@ -100,5 +100,6 @@ export const {
   deleteSnippet,
 } = snippetSlice.actions;
 export const getCurrentSnippets = (state: RootState) => state.snippets.currentSnippets;
+export const getCurrentSnippetCount = (state:  RootState) => Object.keys(state.snippets.currentSnippets.snippets).length
 export const getCurrentPlayingSnippet = (state: RootState) => state.snippets.currentPlayingSnippet;
 export default snippetSlice.reducer;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Controller, useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -85,4 +85,4 @@ const styles = StyleSheet.create({
   buttonContainer: { flexDirection: 'row', marginTop: 20 },
 });
 
-export default CliqueInvite;
+export default memo(CliqueInvite);

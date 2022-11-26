@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TEXT_PRIMARY, TOGGLE_BUTTON, TOGGLE_BUTTON_ACTIVE } from '../constants/colors';
 import { IconProps } from '../interfaces/content';
@@ -52,4 +52,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ToggleButton;
+export default memo(ToggleButton);

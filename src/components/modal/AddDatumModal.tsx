@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
-import React, { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo } from 'react';
 import { useProgress } from 'react-native-track-player';
 import { useAppDispatch } from '../../hooks/redux';
 import useTimeFormatter from '../../hooks/useTimeFormatter';
@@ -138,4 +138,4 @@ export const AddDatumModal = forwardRef<AddDatumModalRef, AddDatumModalProps>(
   }
 );
 
-export default AddDatumModal;
+export default memo(AddDatumModal);

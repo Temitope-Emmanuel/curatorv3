@@ -95,4 +95,5 @@ export const noteSlice = createSlice({
 export const { addCurrentNotes, loadNotes, addNoteReaction, clearNotes, deleteNotes } =
   noteSlice.actions;
 export const getCurrentNotes = (state: RootState) => state.notes.currentNotes;
+export const getCurrentNoteCount = (state:  RootState) => Object.keys(state.notes.currentNotes.notes).length;
 export default noteSlice.reducer;

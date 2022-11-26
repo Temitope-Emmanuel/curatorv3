@@ -33,7 +33,7 @@ export type PlayerTab = {
 
 const PlayerScreen: React.FC<Props> = ({ route }) => {
     const { currentUser } = useAppSelector(getAuth);
-    const { addNewTrack, playlist } = usePlayerService();
+    const { playlist } = usePlayerService();
     const currentMedia = useAppSelector(getCurrentMedia);
     const { sendInvitationToClique, getMediaClique } = useFirestore();
     const slideRef = useRef<FlatList<PlayerTab>>(null);

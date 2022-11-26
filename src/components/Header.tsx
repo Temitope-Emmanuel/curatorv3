@@ -5,6 +5,7 @@ import {
   Text,
   Image,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 import IconImage from '../components/Icon';
 import { TEXT_SECONDARY, TEXT_PRIMARY } from '../constants/colors';
@@ -68,6 +69,7 @@ const styles = StyleSheet.create({
     marginBottom: 'auto',
     alignItems: 'center',
     marginTop: 10,
+    paddingHorizontal: Platform.OS === 'ios' ? 10 : undefined,
   },
   searchContainer: {
     padding: 8,
