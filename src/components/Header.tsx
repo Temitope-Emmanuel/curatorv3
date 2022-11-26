@@ -14,6 +14,8 @@ import IconButton from './IconButton';
 import { useAppSelector } from '../hooks/redux';
 import { getAuth } from '../store/Auth';
 import useFirebaseAuth from '../utils/firebaseAuth';
+import * as Animatable from 'react-native-animatable';
+import { pulse } from '../utils/animation';
 
 const Header = () => {
   const { handleSignout, handleSignup } = useFirebaseAuth();
@@ -29,7 +31,7 @@ const Header = () => {
   // 	}).start();
   // 	toggleShowSearch();
   // };
-
+  
   return (
     <View style={styles.miniContainer}>
       {/* <Animated.View style={[styles.searchContainer, { width: animatedWidth }]}>
@@ -50,7 +52,9 @@ const Header = () => {
           )}
         </TouchableOpacity>
       ) : (
-        <IconButton name="google" onPress={handleSignup} size={ICON_SIZE_M} />
+        <Animatable.View animation={pulse} easing='ease-in-out' duration={1500} iterationCount={'infinite'} >
+          <IconButton name="google" onPress={handleSignup} size={ICON_SIZE_M} />
+        </Animatable.View>
       )}
     </View>
   );

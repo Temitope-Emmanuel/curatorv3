@@ -137,6 +137,8 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     useEffect(() => {
         if (currentUser?.uid) {
             handleGetRemoteAudioFiles();
+        }else {
+            setRemotePlaylist([])
         }
         return () => {
             subscriber.map((item) => item());
@@ -367,6 +369,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                         width: '100%',
                         marginTop: 10,
                         flex: 1,
+                        paddingHorizontal: !isAndroid ?  10 : undefined
                     }}
                 >
                     {displayPlaylist.map((item) => (
@@ -444,8 +447,7 @@ const styles = StyleSheet.create({
     tagMainContainer: {
         width: '100%',
         flexDirection: 'row',
-        marginVertical: 5,
-        paddingVertical: 5,
+        padding: 10,
         justifyContent: 'space-between',
     },
     tagContainer: {
