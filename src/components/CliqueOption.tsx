@@ -28,7 +28,7 @@ export const CliqueOption: React.FC<{
             >
                 <Text style={{ fontSize: 23, color: DROPDOWN_TEXT_2 }}>{label}</Text>
                 {type !== 'Personal' ? (
-                    <IconImage width={24} name={type === 'public' ? 'public' : 'silent'} />
+                    <IconImage width={24} name={type === 'Public' ? 'public' : 'silent'} />
                 ) : (
                     <View />
                 )}

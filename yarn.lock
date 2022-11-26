@@ -6355,10 +6355,10 @@ react-native-toast-message@^2.1.5:
   resolved "https://registry.yarnpkg.com/react-native-toast-message/-/react-native-toast-message-2.1.5.tgz#550acb9c6c0f1ee49c6b57b65a56d34e297eb723"
   integrity sha512-mk3rELtBEhrhWBCN6CTaw0gypgL9ZNauX3xx1LUs4uee9vc0pVsghrKxO57vroUCcNL2hDeZSLJWdQNMCkGeaQ==
 
-react-native-track-player@^2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-2.1.4.tgz#5e75000e382c4b8ac770b53cd6463b191c38c5ea"
-  integrity sha512-pfco6xrUCCdsfazRg7hJS+V9h+JZ24bj2ZNt5Af46wwmIpmD0lYT2Ekr6ggH6/qnCcfDBeNIK5XsrtQCPCaujg==
+react-native-track-player@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-track-player/-/react-native-track-player-3.1.0.tgz#683f862dee01058169121101f73d6d23c0540a06"
+  integrity sha512-IJBprPO2YVA/iMgI317ny/tAFVDir2dy6w2t1BVeb+j1788MYBhO9VcygyyONGKckn8NwtnmsrP9r61CcwJLPA==
 
 react-native@0.70.6:
   version "0.70.6"

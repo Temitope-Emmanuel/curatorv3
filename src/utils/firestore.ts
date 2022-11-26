@@ -161,7 +161,7 @@ const getMediaClique =
             });
           }
         });
-        setCliques(newCliques);
+        setCliques(newCliques.filter(item => item.type === 'Public'));
       });
 
 const sendInvitationToClique =

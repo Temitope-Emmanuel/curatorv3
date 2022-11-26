@@ -66,7 +66,7 @@ const Snippet: React.FC<SnippetProps> = ({
       onLongPress={isAuthor ? () => handleDelete(id) : undefined}
       style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse' }]}
     >
-      {owner.photoURL && (
+      {owner.photoURL && owner.id !== currentUser && (
         <Image
           style={[utilStyles.img, isAuthor ? utilStyles.mr13 : utilStyles.ml13]}
           source={{ uri: owner.photoURL }}
@@ -89,7 +89,6 @@ const Snippet: React.FC<SnippetProps> = ({
         >
           <View style={{ width: '80%' }}>
             <ProgressBar addRadius {...{ progress, duration }} />
-            {/* <ProgressBar isAuthor={isAuthor} /> */}
             <Text style={{ color: TEXT_PRIMARY, fontWeight: '300' }}>{description}</Text>
           </View>
           <IconButton
@@ -110,12 +109,15 @@ const Snippet: React.FC<SnippetProps> = ({
             width={30}
           />
         </View>
-        <Reactions
-          style={utilStyles.mrAuto}
-          handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
-          reactions={mappedReaction}
-          currentUser={currentUser}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <Reactions
+            style={utilStyles.mrAuto}
+            handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
+            reactions={mappedReaction}
+            currentUser={currentUser}
+          />
+          <Text style={{color: TEXT_PRIMARY, fontSize: 11}}>{formatTime.start}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

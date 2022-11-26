@@ -305,9 +305,11 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 disabled: selectedAudio.availableRemote,
                 onPress: currentUser?.email
                     ? () => {
-                        handleSetUploadingMedia(selectedAudio);
+                        updateAudioRef.current?.setMedia(selectedAudio);
+                        updateAudioRef.current?.toggleOpen();
+                        // handleSetUploadingMedia(selectedAudio);
                         handleCloseActionSheet();
-                        toggleShowUploadModal();
+                        // toggleShowUploadModal();
                     }
                     : () => {
                         handleCloseActionSheet();
@@ -320,6 +322,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
         ],
         [
             selectedAudio,
+            updateAudioRef,
             currentUser?.email,
             dispatch,
             handleCloseActionSheet,
@@ -348,7 +351,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             <Header />
             {playlist.length ? (
                 <View style={styles.tagMainContainer}>
-                    <ScrollView ref={tagContainerRef} alwaysBounceHorizontal horizontal style={styles.tagContainer}>
+                    <ScrollView ref={tagContainerRef} alwaysBounceHorizontal horizontal showsHorizontalScrollIndicator={false} style={styles.tagContainer}>
                         {tags.map((item) => (
                             <Chips
                                 label={item.value}
