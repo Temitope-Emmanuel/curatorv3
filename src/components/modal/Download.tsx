@@ -45,17 +45,7 @@ const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>(({}, ref)
     toggleOpen: () => setShowModal(true),
     setDownloadMedia
   }))
-  useEffect(
-    () => () => {
-      setDownloading({
-        downloadId: '',
-        downloadDuration: 0,
-        downloadProgress: 0,
-      });
-    },
-    []
-  );
-
+  
   const handleDownload = async () => {
     const downloadFilePath = `${RNFS.DocumentDirectoryPath}/${downloadMedia.title}`;
     const task = RNFS.downloadFile({
@@ -88,8 +78,8 @@ const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>(({}, ref)
           isOwner: currentUser?.uid === owner.id,
         };
         await createCliques(newMedia);
-        await createNoteRemote(newMedia);
-        await createSnippetRemote(newMedia);
+        await createNoteRemote(newMedia.id);
+        await createSnippetRemote(newMedia.id);
         dispatch(addToPlaylist(newMedia));
         toast({
           text2: `Successfully downloaded ${downloadMedia.title}`,
@@ -106,8 +96,16 @@ const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>(({}, ref)
     handleDownload();
   };
 
+  const onClose = () => {
+    setDownloading({
+      downloadId: '',
+      downloadDuration: 0,
+      downloadProgress: 0,
+    });
+  }
+
   return (
-    <Modal isVisible={showModal} handleClose={toggleShowModal}>
+    <Modal isVisible={showModal} handleClose={toggleShowModal} onClose={onClose}>
       <View>
         <Text style={styles.addAudioTitle}>{`Do you want to download ${downloadMedia.title}`}</Text>
         {isLoading && (

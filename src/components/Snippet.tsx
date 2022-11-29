@@ -66,7 +66,7 @@ const Snippet: React.FC<SnippetProps> = ({
       onLongPress={isAuthor ? () => handleDelete(id) : undefined}
       style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse' }]}
     >
-      {owner.photoURL && owner.id !== currentUser && (
+      {owner && owner.photoURL && owner.id !== currentUser && (
         <Image
           style={[utilStyles.img, isAuthor ? utilStyles.mr13 : utilStyles.ml13]}
           source={{ uri: owner.photoURL }}

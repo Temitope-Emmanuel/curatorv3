@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useProgress } from 'react-native-track-player';
 import DocumentPicker, { types } from 'react-native-document-picker';
 import getPath from '@flyerhq/react-native-android-uri-path';
 import { nanoid } from 'nanoid/non-secure';
@@ -305,11 +304,9 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                 disabled: selectedAudio.availableRemote,
                 onPress: currentUser?.email
                     ? () => {
-                        updateAudioRef.current?.setMedia(selectedAudio);
-                        updateAudioRef.current?.toggleOpen();
-                        // handleSetUploadingMedia(selectedAudio);
+                        handleSetUploadingMedia(selectedAudio);
                         handleCloseActionSheet();
-                        // toggleShowUploadModal();
+                        toggleShowUploadModal();
                     }
                     : () => {
                         handleCloseActionSheet();

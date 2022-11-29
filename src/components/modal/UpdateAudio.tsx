@@ -62,19 +62,6 @@ const UpdateAudio = forwardRef<UpdateAudioRef, UpdateAudioProps>(({
       setTags(newTags);
     }
   }, [updateMedia.tags, defaultTags]);
-  useEffect(
-    () => () => {
-      reset();
-      setTags(
-        tags.map((item) => ({
-          value: item.value,
-          selected: false,
-        }))
-      );
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    },
-    []
-  );
 
   useEffect(() => {
     setValue('author', updateMedia.author);
@@ -114,8 +101,19 @@ const UpdateAudio = forwardRef<UpdateAudioRef, UpdateAudioProps>(({
     }
   };
 
+  const onClose = () => {
+    reset();
+    setTags(
+      tags.map((item) => ({
+        value: item.value,
+        selected: false,
+      }))
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }
+
   return (
-    <Modal isVisible={showModal} handleClose={toggleShowModal}>
+    <Modal isVisible={showModal} handleClose={toggleShowModal} onClose={onClose}>
       <Controller
         control={control}
         rules={{

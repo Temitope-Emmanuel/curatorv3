@@ -26,6 +26,7 @@ import { useAppDispatch } from './src/hooks/redux';
 import { IUser } from './src/interfaces/auth';
 import { setUser, clearUser } from './src/store/Auth';
 import { UploadServiceProvider } from './src/providers/Uploading';
+import UpdateMedia from './src/components/UpdateMedia';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -69,18 +70,21 @@ const App = () => {
   }, []);
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName={ROUTES.SplashScreen}
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name={ROUTES.HomeScreen} component={HomeScreen} />
-        <Stack.Screen name={ROUTES.SplashScreen} component={SplashScreen} />
-        <Stack.Screen name={ROUTES.PlayerScreen} component={PlayerScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName={ROUTES.HomeScreen}
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name={ROUTES.HomeScreen} component={HomeScreen} />
+          <Stack.Screen name={ROUTES.SplashScreen} component={SplashScreen} />
+          <Stack.Screen name={ROUTES.PlayerScreen} component={PlayerScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+      <UpdateMedia/>
+    </>
   );
 };
 

@@ -10,11 +10,11 @@ import { INote } from '../interfaces/note';
 import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
 import { IClique } from '../interfaces/clique';
 
-const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
+const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia['id']) => {
   // First check if it exist
   firestore()
     .collection('media')
-    .doc(currentMedia.id)
+    .doc(currentMedia)
     .collection('snippets')
     .doc(currentUser?.uid)
     .get()
@@ -23,7 +23,7 @@ const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
       if (!data.exists || !docs?.user) {
         return firestore()
           .collection('media')
-          .doc(currentMedia.id)
+          .doc(currentMedia)
           .collection('snippets')
           .doc(currentUser?.uid)
           .set(
@@ -44,10 +44,10 @@ const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
     });
 };
 
-const createNoteRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
+const createNoteRemote = (currentUser: IUser) => (currentMedia: IMedia['id']) => {
   firestore()
     .collection('media')
-    .doc(currentMedia.id)
+    .doc(currentMedia)
     .collection('notes')
     .doc(currentUser?.uid)
     .get()
@@ -56,7 +56,7 @@ const createNoteRemote = (currentUser: IUser) => (currentMedia: IMedia) => {
       if (!data.exists || !docs?.user) {
         return firestore()
           .collection('media')
-          .doc(currentMedia.id)
+          .doc(currentMedia)
           .collection('notes')
           .doc(currentUser?.uid)
           .set(
@@ -217,30 +217,37 @@ const handleSaveSnippetRemote =
     (
       { description, formatTime, id, reactions, time }: Omit<ISnippet, 'owner'>,
       currentMedia: IMedia
-    ) =>
-      firestore()
-        .collection('media')
-        .doc(currentMedia.id)
-        .collection('snippets')
-        .doc(currentUser?.uid)
-        .set(
-          {
-            data: {
-              [id]: {
-                description,
-                formatTime,
-                id,
-                reactions,
-                time,
+    ) => {
+      if(!currentMedia.availableRemote){
+        createSnippetRemote(currentUser)(currentMedia.id)
+      }
+        firestore()
+          .collection('media')
+          .doc(currentMedia.id)
+          .collection('snippets')
+          .doc(currentUser?.uid)
+          .set(
+            {
+              data: {
+                [id]: {
+                  description,
+                  formatTime,
+                  id,
+                  reactions,
+                  time,
+                },
               },
             },
-          },
-          { merge: true }
-        );
+            { merge: true }
+          );
+    }
 
 const handleSaveNoteRemote =
   (currentUser: IUser) =>
-    ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) =>
+    ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) => {
+      if(!currentMedia.availableRemote){
+        createNoteRemote(currentUser)(currentMedia.id)
+      }
       firestore()
         .collection('media')
         .doc(currentMedia.id)
@@ -260,6 +267,7 @@ const handleSaveNoteRemote =
           },
           { merge: true }
         );
+    }
 
 const getRemoteAudioFilesByEmail =
   (currentUser: IUser) => async (setMedia: (arg: IMedia[]) => void) =>
@@ -308,9 +316,11 @@ const getRemoteAudioFilesByEmail =
 
 const getAllMediaNote = ({
   currentMedia,
+  currentUser,
   setNote,
 }: {
   usersIds: string[];
+  currentUser: IUser;
   currentMedia: IMedia['id'];
   setNote: (arg: RemoteNote[]) => void;
 }) =>
@@ -319,7 +329,9 @@ const getAllMediaNote = ({
     .doc(currentMedia)
     .collection('notes')
     .onSnapshot((data) => {
-      if (!data.empty) {
+      if (data.empty){
+        createNoteRemote(currentUser)(currentMedia)
+      } else {
         const remoteUserNotes = data.docs.map((item) => {
           const doc = item.data();
           return {
@@ -344,8 +356,10 @@ const getAllMediaNote = ({
 const getAllMediaSnippet = ({
   currentMedia,
   setSnippet,
+  currentUser
 }: {
   currentMedia: IMedia['id'];
+  currentUser: IUser;
   usersIds: string[];
   setSnippet: (arg: RemoteSnippet[]) => void;
 }) =>
@@ -354,7 +368,9 @@ const getAllMediaSnippet = ({
     .doc(currentMedia)
     .collection('snippets')
     .onSnapshot((data) => {
-      if (!data.empty) {
+      if (data.empty){
+        createSnippetRemote(currentUser)(currentMedia)
+      } else {
         const remoteUserSnippets = data.docs.map((item) => {
           const doc = item.data();
           return {

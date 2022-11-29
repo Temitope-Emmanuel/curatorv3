@@ -45,19 +45,21 @@ export const PlayerDetailScreen: React.FC<{
   const getRemoteData = useCallback(async () => {
     const remotedMediaNote = getAllMediaNote({
       currentMedia: currentMedia.id,
+      currentUser: currentUser as IUser,
       setNote: setRemoteNote,
       usersIds,
     });
     const remotedMediaSnippet = getAllMediaSnippet({
       currentMedia: currentMedia.id,
       setSnippet: setRemoteSnippet,
+      currentUser: currentUser as IUser,
       usersIds,
     });
     setSubscriber((prevSt) => [...prevSt, remotedMediaNote, remotedMediaSnippet]);
-  }, [currentMedia.id, getAllMediaNote, usersIds, getAllMediaSnippet]);
+  }, [currentMedia.id, getAllMediaNote, currentUser, usersIds, getAllMediaSnippet]);
 
   useEffect(() => {
-    if (currentMedia.id && usersIds.length) {
+    if (currentMedia.id) {
       dispatch(loadNotes({ id: currentMedia.id }));
       dispatch(loadSnippets({ id: currentMedia.id }));
       getRemoteData();

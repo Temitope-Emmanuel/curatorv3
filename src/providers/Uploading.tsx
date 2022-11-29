@@ -41,15 +41,14 @@ export const UploadServiceProvider = <P extends object>(Component: React.Compone
                 }
             }, [currentUploadingMedia])
         const toggleShowUploadModal = () => {
-            console.log('we are here')
             uploadModalRef.current?.toggle();
         }
 
         const handleCompleteUpload = async (ref: FirebaseStorageTypes.Reference) => {
             const downloadUrl = await ref.getDownloadURL();
             saveFileToCollection(downloadUrl, currentUploadingMedia).then(() => {
-                createSnippetRemote(currentUploadingMedia);
-                createNoteRemote(currentUploadingMedia);
+                createSnippetRemote(currentUploadingMedia.id);
+                createNoteRemote(currentUploadingMedia.id);
                 createCliques(currentUploadingMedia);
                 dispatch(completeUploading(currentUploadingMedia));
                 setUploadProgress({
@@ -71,7 +70,6 @@ export const UploadServiceProvider = <P extends object>(Component: React.Compone
                     const ref = storage().ref(`${currentUser?.uid}/${currentUploadingMedia.id}`);
                     const task = ref.putFile(currentUploadingMedia.url);
                     let downloadComplete = false;
-                    console.log('this is the task')
                     task.on('state_changed', async (taskSnapshot) => {
                         if (taskSnapshot.state === 'success') {
                             if (!downloadComplete) {

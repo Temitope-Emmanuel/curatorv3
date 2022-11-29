@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import TrackPlayer, {
   Capability,
+  RepeatMode,
   State,
 } from 'react-native-track-player';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
@@ -22,59 +23,98 @@ export class TrackPlayerClass {
   }
 
   start = async () => {
-    await TrackPlayer.setupPlayer({
-    });
-    await TrackPlayer.updateOptions({
-      backwardJumpInterval: 5,
-      forwardJumpInterval: 5,
-      progressUpdateEventInterval: 3,
-      capabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.SkipToPrevious,
-        Capability.Stop,
-      ],
-      compactCapabilities: [
-        Capability.Play,
-        Capability.Pause,
-        Capability.SkipToNext,
-        Capability.JumpBackward,
-        Capability.JumpForward,
-      ],
-    });
-  };
-
-  addNewTrack = async ({
-    author,
-    createdAt,
-    description,
-    id,
-    url,
-    title,
-    isOwner,
-  }: IMedia) => {
-    try {
-      this.currentMedia = {
-        id,
-        author,
-        createdAt,
-        description,
-        title,
-        url,
-        isOwner,
-      };
-      await TrackPlayer.reset();
-      await TrackPlayer.add({
-        ...this.currentMedia,
-        artist: author
+    try{
+      await TrackPlayer.getCurrentTrack();
+    }catch(err){
+      await TrackPlayer.setupPlayer();
+      await TrackPlayer.updateOptions({
+        backwardJumpInterval: 5,
+        forwardJumpInterval: 5,
+        // progressUpdateEventInterval: 3,
+        capabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.SkipToPrevious,
+          Capability.Stop,
+        ],
+        compactCapabilities: [
+          Capability.Play,
+          Capability.Pause,
+          Capability.SkipToNext,
+          Capability.JumpBackward,
+          Capability.JumpForward,
+        ],
       });
-      // await TrackPlayer.setRepeatMode(RepeatMode.Off);
-      // await TrackPlayer.setVolume(1);
-    } catch (err) {
-      console.log('there\'s been an err', { err });
     }
   };
+
+  // addNewTrack = async ({
+  //   author,
+  //   createdAt,
+  //   description,
+  //   id,
+  //   url,
+  //   title,
+  //   isOwner,
+  // }: IMedia) => {
+  //   try {
+  //     this.currentMedia = {
+  //       id,
+  //       author,
+  //       createdAt,
+  //       description,
+  //       title,
+  //       url,
+  //       isOwner,
+  //     };
+  //     await TrackPlayer.reset();
+  //     await TrackPlayer.add({
+  //       ...this.currentMedia,
+  //       artist: author
+  //     });
+  //     await TrackPlayer.setRepeatMode(RepeatMode.Off);
+  //     await TrackPlayer.setVolume(1);
+  //   } catch (err) {
+  //     console.log('there\'s been an err', { err });
+  //   }
+  // };
+
+  addNewTrack = async ({ author, createdAt, description, id, url, title, isOwner }: IMedia) => {
+		try {
+			this.currentMedia = {
+				id,
+				author,
+				createdAt,
+				description,
+				title,
+				url,
+				isOwner,
+			};
+			const currentTrack = await TrackPlayer.getCurrentTrack();
+			if (currentTrack === null) {
+				await TrackPlayer.add({
+          ...this.currentMedia,
+          artist: author 
+        });
+			} else {
+				const currentTrackDetail = await TrackPlayer.getTrack(currentTrack);
+				// For when there is a new track
+				if (currentTrackDetail && currentTrackDetail.id !== id) {
+					// await TrackPlayer.reset();
+					await TrackPlayer.add(this.currentMedia);
+					await TrackPlayer.skipToNext();
+				} else {
+					await TrackPlayer.add(this.currentMedia);
+				}
+			}
+			await TrackPlayer.play();
+			await TrackPlayer.setRepeatMode(RepeatMode.Off);
+			await TrackPlayer.setVolume(1);
+		} catch (err) {
+			console.log('there\'s been an err', { err });
+		}
+	};
 
   seek = async (seekTo: number) => {
     await TrackPlayer.pause();

@@ -48,7 +48,7 @@ const AudioDisplay: React.FC<{
             {audio.title.split(".mp3")[0]}
           </Text>
         )}
-        {showExtraDetails && <Text style={styles.infoDescription}>{audio.description}</Text>}
+        {showExtraDetails && <Text numberOfLines={5} style={styles.infoDescription}>{audio.description}</Text>}
       </View>
       {showProgressBar && duration && position ? (
         <ProgressBarDef

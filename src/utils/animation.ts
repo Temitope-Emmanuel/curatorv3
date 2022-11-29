@@ -9,7 +9,7 @@ export const pulse: Animatable.CustomAnimation<TextStyle & ViewStyle & ImageStyl
       transform: [{scale: 1.15}]
     },
     0.5: {
-      transform: [{scale: 1.3}]
+      transform: [{scale: 1.4}]
     },
     0.75: {
       transform: [{scale: 1.15}]

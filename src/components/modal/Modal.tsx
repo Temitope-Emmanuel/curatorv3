@@ -5,10 +5,12 @@ import { MODAL_BG } from '../../constants/colors';
 
 const Modal: React.FC<{
   handleClose: () => void;
+  onClose?:() => void;
   isVisible: boolean;
   children: ReactNode;
-}> = ({ isVisible, children, handleClose }) => (
+}> = ({ isVisible, children, handleClose, onClose }) => (
   <ModalComponent
+    onModalWillHide={onClose}
     isVisible={isVisible}
     backdropOpacity={0.5}
     style={styles.modalContainer}
