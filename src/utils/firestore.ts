@@ -9,6 +9,7 @@ import { ISnippet } from '../interfaces/snippet';
 import { INote } from '../interfaces/note';
 import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
 import { IClique } from '../interfaces/clique';
+import { firebase } from '@react-native-firebase/auth';
 
 const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia['id']) => {
   // First check if it exist
@@ -156,8 +157,8 @@ const getMediaClique =
                 item.id === currentMedia.owner.id
                   ? 'Public'
                   : item.id === currentUser.uid
-                  ? 'Personal'
-                  : 'Secret',
+                    ? 'Personal'
+                    : 'Secret',
             });
           }
         });
@@ -218,34 +219,34 @@ const handleSaveSnippetRemote =
       { description, formatTime, id, reactions, time }: Omit<ISnippet, 'owner'>,
       currentMedia: IMedia
     ) => {
-      if(!currentMedia.availableRemote){
+      if (!currentMedia.availableRemote) {
         createSnippetRemote(currentUser)(currentMedia.id)
       }
-        firestore()
-          .collection('media')
-          .doc(currentMedia.id)
-          .collection('snippets')
-          .doc(currentUser?.uid)
-          .set(
-            {
-              data: {
-                [id]: {
-                  description,
-                  formatTime,
-                  id,
-                  reactions,
-                  time,
-                },
+      firestore()
+        .collection('media')
+        .doc(currentMedia.id)
+        .collection('snippets')
+        .doc(currentUser?.uid)
+        .set(
+          {
+            data: {
+              [id]: {
+                description,
+                formatTime,
+                id,
+                reactions,
+                time,
               },
             },
-            { merge: true }
-          );
+          },
+          { merge: true }
+        );
     }
 
 const handleSaveNoteRemote =
   (currentUser: IUser) =>
     ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) => {
-      if(!currentMedia.availableRemote){
+      if (!currentMedia.availableRemote) {
         createNoteRemote(currentUser)(currentMedia.id)
       }
       firestore()
@@ -329,7 +330,7 @@ const getAllMediaNote = ({
     .doc(currentMedia)
     .collection('notes')
     .onSnapshot((data) => {
-      if (data.empty){
+      if (data.empty) {
         createNoteRemote(currentUser)(currentMedia)
       } else {
         const remoteUserNotes = data.docs.map((item) => {
@@ -353,6 +354,24 @@ const getAllMediaNote = ({
       }
     });
 
+const updateMediaNote = (currentUser: IUser) => ({ currentMedia, noteId }: {
+  noteId: string;
+  currentMedia: IMedia['id'];
+}) => (
+  firestore().collection('media').doc(currentMedia).collection('notes').doc(currentUser.uid).update({
+    [`data.${noteId}`]: firebase.firestore.FieldValue.delete()
+  })
+)
+
+const updateMediaSnippet = (currentUser: IUser) => ({ currentMedia, snippetId }: {
+  snippetId: string;
+  currentMedia: IMedia['id']
+}) => (
+  firestore().collection('media').doc(currentMedia).collection('snippets').doc(currentUser.uid).update({
+    [`data.${snippetId}`]: firebase.firestore.FieldValue.delete()
+  })
+)
+
 const getAllMediaSnippet = ({
   currentMedia,
   setSnippet,
@@ -368,7 +387,7 @@ const getAllMediaSnippet = ({
     .doc(currentMedia)
     .collection('snippets')
     .onSnapshot((data) => {
-      if (data.empty){
+      if (data.empty) {
         createSnippetRemote(currentUser)(currentMedia)
       } else {
         const remoteUserSnippets = data.docs.map((item) => {
@@ -444,6 +463,8 @@ export const useFirestore = () => {
     getMediaClique: getMediaClique(currentUser as IUser),
     createCliques: createCliques(currentUser as IUser),
     sendInvitationToClique: sendInvitationToClique(currentUser as IUser),
+    deleteMediaSnippet: updateMediaSnippet(currentUser as IUser),
+    deleteMediaNote: updateMediaNote(currentUser as IUser),
     getAllMediaSnippet,
     getAllMediaNote,
     createNewUser,

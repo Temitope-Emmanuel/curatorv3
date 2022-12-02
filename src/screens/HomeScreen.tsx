@@ -36,6 +36,7 @@ type Props = StackScreenProps<RootStackParamList, 'HomeScreen'>;
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
     const dispatch = useAppDispatch();
+    const [search, setSearch] = useState('');
     const { addNewTrack } = usePlayerService();
     const { toggleShowUploadModal, handleSetUploadingMedia } = useUploadService();
 
@@ -281,6 +282,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             {
                 icon: 'delete-forever',
                 label: 'Delete',
+                visible: true,
                 onPress: () => {
                     dispatch(deleteMedia(selectedAudio?.id ?? ''));
                     handleCloseActionSheet();
@@ -291,6 +293,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             {
                 icon: 'edit-border',
                 label: 'Edit',
+                visible: selectedAudio.isOwner,
                 onPress: () => {
                     updateAudioRef.current?.setMedia(selectedAudio);
                     updateAudioRef.current?.toggle();
@@ -301,6 +304,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             {
                 icon: 'upload',
                 label: 'Upload',
+                visible: !selectedAudio.availableRemote,
                 disabled: selectedAudio.availableRemote,
                 onPress: currentUser?.email
                     ? () => {
@@ -345,7 +349,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Header />
+            <Header {...{search, setSearch}}  />
             {playlist.length ? (
                 <View style={styles.tagMainContainer}>
                     <ScrollView ref={tagContainerRef} alwaysBounceHorizontal horizontal showsHorizontalScrollIndicator={false} style={styles.tagContainer}>
@@ -386,6 +390,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
                             }
                             onPressMoreIcon={() => handleAudioDisplayPress(item.id)}
                             showDetails
+                            showMoreIcon={item.availableLocal || false}
                             showExtraDetails
                             showProgressBar={item.availableLocal}
                             key={item.id}

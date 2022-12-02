@@ -1,6 +1,6 @@
 export type Icons = 'SplashScreen1' | 'SplashScreen2' | 'SplashScreen3' | 'add'
   | 'podcast'
-//   | 'search'
+  | 'search'
   | 'google'
   | 'signout'
   | 'more'

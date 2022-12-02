@@ -10,6 +10,7 @@ import IconImage from './Icon';
 export interface ActionType {
   label: string;
   disabled?: boolean;
+  visible: boolean;
   icon: IconProps['name'];
   onPress?: () => void;
 }
@@ -80,6 +81,7 @@ const ActionSheet = React.forwardRef<Pick<ActionSheetRef, 'hide' | 'show'>, Acti
           )}
         </View>
         {action.map((item) => (
+          item.visible ? 
           <TouchableOpacity
             key={item.label}
             onPress={item.onPress}
@@ -93,7 +95,7 @@ const ActionSheet = React.forwardRef<Pick<ActionSheetRef, 'hide' | 'show'>, Acti
           >
             <IconImage name={item.icon} width={30} fill={TEXT_SECONDARY} />
             <Text style={{ color: CHIP_TEXT, marginLeft: 10 }}>{item.label}</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> : <></>
         ))}
       </NativeActionSheet>
     );

@@ -116,7 +116,7 @@ const Snippet: React.FC<SnippetProps> = ({
             reactions={mappedReaction}
             currentUser={currentUser}
           />
-          <Text style={{color: TEXT_PRIMARY, fontSize: 11}}>{formatTime.start}</Text>
+          <Text style={utilStyles.timestamp}>{formatTime.start}</Text>
         </View>
       </View>
     </TouchableOpacity>

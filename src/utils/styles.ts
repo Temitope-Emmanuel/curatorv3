@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { TEXT_PRIMARY } from '../constants/colors';
 
 export const utilStyles = StyleSheet.create({
   mlAuto: {
@@ -17,6 +18,11 @@ export const utilStyles = StyleSheet.create({
     width: 30,
     height: 30,
     borderRadius: 5,
+  },
+  timestamp: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: TEXT_PRIMARY,
   },
 });
 

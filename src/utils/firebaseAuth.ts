@@ -70,6 +70,10 @@ export const useFirebaseAuth = () => {
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      toast({
+        type: 'error',
+        text2: `error occurred while login, ${err.message}`
+      })
       if (err.code === statusCodes.SIGN_IN_CANCELLED) return undefined;
       if (err.code === statusCodes.IN_PROGRESS) {
         await GoogleSignin.signOut();

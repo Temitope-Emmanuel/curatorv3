@@ -31,7 +31,7 @@ export type PlayerTab = {
     id: string;
 };
 
-const PlayerScreen: React.FC<Props> = ({ route }) => {
+const PlayerScreen: React.FC<Props> = () => {
     const { currentUser } = useAppSelector(getAuth);
     const { playlist } = usePlayerService();
     const currentMedia = useAppSelector(getCurrentMedia);

@@ -28,7 +28,8 @@ export const PlayerDetailScreen: React.FC<{
 }> = ({ setCurrentTab, slideRef, currentUser, currentClique, playlist }) => {
   const dispatch = useAppDispatch();
   const { width } = useWindowDimensions();
-  const { updateNoteReactions, getAllMediaNote, updateSnippetReactions, getAllMediaSnippet } = useFirestore();
+  const { updateNoteReactions, getAllMediaNote, updateSnippetReactions
+    , getAllMediaSnippet, deleteMediaNote, deleteMediaSnippet } = useFirestore();
   const currentMedia = useAppSelector(getCurrentMedia);
   const currentUserNotes = useAppSelector(getCurrentNotes);
   const currentUserSnippets = useAppSelector(getCurrentSnippets);
@@ -157,6 +158,18 @@ export const PlayerDetailScreen: React.FC<{
     }
   };
 
+  const handleDeleteNote = (noteId: string) => 
+    deleteMediaNote({
+      currentMedia: currentMedia.id,
+      noteId
+    })
+
+    const handleDeleteSnippet = (snippetId: string) => 
+    deleteMediaSnippet({
+      currentMedia: currentMedia.id,
+      snippetId
+    })
+
   return (
     <TabScreen
       {
@@ -167,12 +180,12 @@ export const PlayerDetailScreen: React.FC<{
         <View style={{ paddingHorizontal: 15, width: width - 30 }}>
           {type === 'Note' ? (
             <NoteTab
-              {...{ currentNotes, currentUser, playlist }}
+              {...{ currentNotes, currentUser, playlist, handleDeleteNote }}
               handleReactions={handleAddReactionForNote}
             />
           ) : (
             <SnippetTab
-              {...{ currentSnippets, currentUser, playlist }}
+              {...{ currentSnippets, currentUser, playlist, handleDeleteSnippet }}
               handleReactions={handleAddReactionForSnippet}
             />
           )}

@@ -12,9 +12,10 @@ import Snippet from './Snippet';
 
 interface SnippetTabProps extends BaseTabProps {
   currentSnippets: RootState['snippets']['currentSnippets'];
+  handleDeleteSnippet: (snippetId: string) => Promise<void>
 }
 
-const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist }) => {
+const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist, handleDeleteSnippet }) => {
   const handleDeleteRef = useRef<DeleteAudioRef>(null);
   const { position } = useProgress();
   const { setPlayingSnippet } = usePlayerService();
@@ -54,6 +55,7 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
       type: 'snippet',
     });
     handleDeleteRef.current?.toggleShowDelete();
+    handleDeleteSnippet(id)
   };
 
   const renderItem = ({

@@ -27,6 +27,7 @@ import { IUser } from './src/interfaces/auth';
 import { setUser, clearUser } from './src/store/Auth';
 import { UploadServiceProvider } from './src/providers/Uploading';
 import UpdateMedia from './src/components/UpdateMedia';
+import Toast from 'react-native-toast-message';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -84,6 +85,7 @@ const App = () => {
         </Stack.Navigator>
       </NavigationContainer>
       <UpdateMedia/>
+      <Toast/>
     </>
   );
 };

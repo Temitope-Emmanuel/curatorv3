@@ -7,7 +7,7 @@ import { IMedia } from '../interfaces/Media';
 import IconButton from './IconButton';
 import ProgressBarDef from './ProgressBarDef';
 
-const AudioDisplay: React.FC<{
+interface AudioDisplayProps {
   audio: IMedia;
   showProgressBar?: boolean;
   onPress: () => void;
@@ -17,7 +17,10 @@ const AudioDisplay: React.FC<{
   showExtraDetails?: boolean;
   handleDownload?: () => void;
   displayImage: string;
-}> = ({
+  showMoreIcon: boolean;
+}
+
+const AudioDisplay: React.FC<AudioDisplayProps> = ({
   showDetails,
   showActions,
   showExtraDetails,
@@ -26,6 +29,7 @@ const AudioDisplay: React.FC<{
   onPressMoreIcon,
   audio,
   handleDownload,
+  showMoreIcon,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   displayImage,
 }) => {
@@ -40,7 +44,7 @@ const AudioDisplay: React.FC<{
             new Date(audio.createdAt)
           )} ago`}</Text>
         </View>
-        {onPressMoreIcon && <IconButton onPress={onPressMoreIcon} name="more" size={30} />}
+        {showMoreIcon && onPressMoreIcon && <IconButton onPress={onPressMoreIcon} name="more" size={30} />}
       </View>
       <View style={styles.mv10}>
         {showDetails && (

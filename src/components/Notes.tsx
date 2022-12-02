@@ -67,17 +67,19 @@ const Notes: React.FC<NoteProps> = ({
             marginBottom: 5,
           }}
         >
-          <Text style={styles.notesTimeStamp}>{timestamp}</Text>
           {description.length ? (
             <Text style={styles.notesDescription}>{description}</Text>
           ) : undefined}
         </View>
-        <Reactions
-          currentUser={currentUser}
-          style={utilStyles.mrAuto}
-          handleReaction={handleReaction({ noteId: id, userId: owner.id })}
-          reactions={mappedReaction}
-        />
+        <View style={{flexDirection: 'row'}}>
+          <Reactions
+            currentUser={currentUser}
+            style={utilStyles.mrAuto}
+            handleReaction={handleReaction({ noteId: id, userId: owner.id })}
+            reactions={mappedReaction}
+          />
+          <Text style={utilStyles.timestamp}>{timestamp}</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -91,11 +93,6 @@ const styles = StyleSheet.create({
   reactionContainer: {
     marginBottom: 10,
     flex: 1,
-  },
-  notesTimeStamp: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: TEXT_PRIMARY,
   },
   notesDescription: {
     color: TEXT_PRIMARY,

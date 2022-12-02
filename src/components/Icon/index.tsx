@@ -32,7 +32,7 @@ import PublicIcon from './Public';
 // import QueueIcon from './Queue';
 import RecommendIcon from './Recommend';
 import Replay10Icon from './Replay10';
-// import SearchIcon from './Search';
+import SearchIcon from './Search';
 import SignoutIcon from './Signout';
 import SilentIcon from './Silent';
 // import SplashScreen1Svg from './splashScreen1';
@@ -55,8 +55,8 @@ export const IconImage: React.FC<
       return <AddIcon {...{width, fill}} />;
     case 'podcast':
     	return <PodcastIcon width={width} />;
-    // case 'search':
-    // 	return <SearchIcon fill={fill} width={width} />;
+    case 'search':
+    	return <SearchIcon fill={fill} width={width} />;
     case 'google':
     	return <GoogleIcon width={width} />;
     case 'signout':

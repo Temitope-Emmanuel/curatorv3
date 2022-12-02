@@ -10,11 +10,11 @@ import DeleteModal, { DeleteAudioRef } from './modal/DeleteModal';
 import Notes from './Notes';
 
 interface NoteTabProps extends BaseTabProps {
-  playlist: TrackPlayerClass | null;
+  handleDeleteNote: (noteId: string) => Promise<void>
   currentNotes: RootState['notes']['currentNotes'];
 }
 
-const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions, playlist }) => {
+const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions, playlist, handleDeleteNote }) => {
   const handleDeleteRef = useRef<DeleteAudioRef>(null);
   const mappedNotes = useMemo(
     () => Object.values(currentNotes.notes).sort((a, b) => a.time - b.time),
@@ -32,6 +32,7 @@ const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReac
       type: 'note',
     });
     handleDeleteRef.current?.toggleShowDelete();
+    handleDeleteNote(id)
   };
 
   const renderItem = ({
