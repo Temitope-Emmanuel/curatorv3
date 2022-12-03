@@ -60,7 +60,7 @@ const AddNote: React.FC<AddNoteProps> = ({
     setValue('time.Hour', splitProgress[0]);
     setValue('time.Minute', splitProgress[1]);
     setValue('time.Second', splitProgress[2]);
-  }, [formattedProgress, setValue]);
+  }, [setValue]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => reset, []);

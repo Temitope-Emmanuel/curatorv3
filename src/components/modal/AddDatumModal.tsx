@@ -40,11 +40,13 @@ export const AddDatumModal = forwardRef<AddDatumModalRef, AddDatumModalProps>(
       toggleSnippetModal,
     }));
     useEffect(() => {
+      let timer:number = 0;
       if (showAddNoteModal || showAddSnippetModal) {
-        playlist.current?.pause();
+        timer = setTimeout(() => playlist.current?.pause(), 4000)
       } else {
         playlist.current?.play();
       }
+      return () => clearTimeout(timer);
     }, [showAddNoteModal, showAddSnippetModal, playlist]);
 
     const formattedProgress = useMemo(

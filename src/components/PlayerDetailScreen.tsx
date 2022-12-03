@@ -45,6 +45,19 @@ export const PlayerDetailScreen: React.FC<{
     [currentClique]
   );
 
+  useEffect(() => {
+    if (currentMedia.id) {
+      dispatch(loadNotes({ id: currentMedia.id }));
+      dispatch(loadSnippets({ id: currentMedia.id }));
+      getRemoteData();
+      return () => {
+        subscriber.map((item) => item());
+      };
+    }
+    return undefined;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentMedia, usersIds, dispatch]);
+
   const getRemoteData = useCallback(async () => {
     const remotedMediaNote = getAllMediaNote({
       currentMedia: currentMedia.id,
@@ -60,19 +73,6 @@ export const PlayerDetailScreen: React.FC<{
     });
     setSubscriber((prevSt) => [...prevSt, remotedMediaNote, remotedMediaSnippet]);
   }, [currentMedia.id, getAllMediaNote, currentUser, usersIds, getAllMediaSnippet]);
-
-  useEffect(() => {
-    if (currentMedia.id) {
-      dispatch(loadNotes({ id: currentMedia.id }));
-      dispatch(loadSnippets({ id: currentMedia.id }));
-      getRemoteData();
-      return () => {
-        subscriber.map((item) => item());
-      };
-    }
-    return undefined;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentMedia, usersIds, dispatch]);
 
   const currentNotes = useMemo(
     () =>
