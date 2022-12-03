@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useProgress } from 'react-native-track-player';
 import { BG_TERTIARY, TEXT_TERTIARY } from '../constants/colors';
@@ -7,16 +7,13 @@ import { BaseTabProps } from '../interfaces/tab';
 import usePlayerService from '../providers/TrackPlayer';
 import { RootState } from '../store';
 import IconImage from './Icon';
-import DeleteModal, { DeleteAudioRef } from './modal/DeleteModal';
 import Snippet from './Snippet';
 
 interface SnippetTabProps extends BaseTabProps {
   currentSnippets: RootState['snippets']['currentSnippets'];
-  handleDeleteSnippet: (snippetId: string) => Promise<void>
 }
 
-const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist, handleDeleteSnippet }) => {
-  const handleDeleteRef = useRef<DeleteAudioRef>(null);
+const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist, handleDelete }) => {
   const { position } = useProgress();
   const { setPlayingSnippet } = usePlayerService();
   const [currentPlayingSnippet, setCurrentPlayingSnippet] = useState<ISnippet>(defaultSnippet);
@@ -47,17 +44,6 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
     [playlist, setCurrentPlayingSnippet]
   );
 
-  const handleDelete = (id: string) => {
-    const foundSnippet = currentSnippets.snippets[id];
-    handleDeleteRef.current?.setItemToDelete({
-      id: foundSnippet.id,
-      name: foundSnippet.description,
-      type: 'snippet',
-    });
-    handleDeleteRef.current?.toggleShowDelete();
-    handleDeleteSnippet(id)
-  };
-
   const renderItem = ({
     item: { description, id, owner, reactions, time, formatTime },
   }: {
@@ -87,7 +73,6 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
           </Text>
         </View>
       )}
-      <DeleteModal ref={handleDeleteRef} />
     </>
   );
 };

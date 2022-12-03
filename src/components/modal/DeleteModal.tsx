@@ -8,14 +8,20 @@ import { deleteNotes } from '../../store/Notes';
 import { deleteSnippet } from '../../store/Snippets';
 import useToggle from '../../hooks/useToggle';
 import Modal from './Modal';
+import { IMedia } from '../../interfaces/Media';
 
 export interface DeleteAudioRef {
   toggleShowDelete: () => void;
   setItemToDelete: (arg: { name: string; id: string; type: 'note' | 'snippet' }) => void;
 }
 
+interface DeleteModalProps {
+  currentMedia: IMedia
+  deleteRemoteNote: (noteId: string) => Promise<void>;
+  deleteRemoteSnippet: (snippetId: string) => Promise<void>;
+}
 // eslint-disable-next-line react/display-name
-const DeleteModal = forwardRef<DeleteAudioRef>((_, ref) => {
+const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({currentMedia, deleteRemoteNote, deleteRemoteSnippet}, ref) => {
   const dispatch = useAppDispatch();
   const [showDeleteModal, toggleShowDeleteModal] = useToggle();
   const [itemToDelete, setItemToDelete] = useState<{
@@ -30,10 +36,13 @@ const DeleteModal = forwardRef<DeleteAudioRef>((_, ref) => {
 
   const handleNoteDelete = useCallback(() => {
     dispatch(deleteNotes({ id: itemToDelete.id }));
+    deleteRemoteNote(itemToDelete.id);
     toggleShowDeleteModal();
   }, [dispatch, itemToDelete.id, toggleShowDeleteModal]);
+
   const handleSnippetDelete = useCallback(() => {
     dispatch(deleteSnippet({ id: itemToDelete.id }));
+    deleteRemoteSnippet(itemToDelete.id);
     toggleShowDeleteModal();
   }, [dispatch, itemToDelete.id, toggleShowDeleteModal]);
 

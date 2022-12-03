@@ -1,38 +1,23 @@
-import React, { memo, useMemo, useRef } from 'react';
+import React, { memo, useMemo } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { TEXT_TERTIARY } from '../constants/colors';
 import { INote } from '../interfaces/note';
 import { BaseTabProps } from '../interfaces/tab';
-import { TrackPlayerClass } from '../providers/TrackPlayer';
 import { RootState } from '../store';
 import IconImage from './Icon';
-import DeleteModal, { DeleteAudioRef } from './modal/DeleteModal';
 import Notes from './Notes';
 
 interface NoteTabProps extends BaseTabProps {
-  handleDeleteNote: (noteId: string) => Promise<void>
   currentNotes: RootState['notes']['currentNotes'];
 }
 
-const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions, playlist, handleDeleteNote }) => {
-  const handleDeleteRef = useRef<DeleteAudioRef>(null);
+const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions, playlist, handleDelete }) => {
   const mappedNotes = useMemo(
     () => Object.values(currentNotes.notes).sort((a, b) => a.time - b.time),
     [currentNotes.notes]
   );
   const handleNotePress = (seekNote: { time: number }) => {
     playlist?.seek(seekNote.time);
-  };
-
-  const handleDelete = (id: string) => {
-    const foundNote = currentNotes.notes[id];
-    handleDeleteRef.current?.setItemToDelete({
-      id: foundNote.id,
-      name: foundNote.description,
-      type: 'note',
-    });
-    handleDeleteRef.current?.toggleShowDelete();
-    handleDeleteNote(id)
   };
 
   const renderItem = ({
@@ -62,7 +47,6 @@ const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReac
           </Text>
         </View>
       )}
-      <DeleteModal ref={handleDeleteRef} />
     </>
   );
 };

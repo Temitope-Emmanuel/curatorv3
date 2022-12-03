@@ -80,7 +80,7 @@ const ActionSheet = React.forwardRef<Pick<ActionSheetRef, 'hide' | 'show'>, Acti
             <></>
           )}
         </View>
-        {action.map((item) => (
+        {action.map((item, idx) => (
           item.visible ? 
           <TouchableOpacity
             key={item.label}
@@ -95,7 +95,7 @@ const ActionSheet = React.forwardRef<Pick<ActionSheetRef, 'hide' | 'show'>, Acti
           >
             <IconImage name={item.icon} width={30} fill={TEXT_SECONDARY} />
             <Text style={{ color: CHIP_TEXT, marginLeft: 10 }}>{item.label}</Text>
-          </TouchableOpacity> : <></>
+          </TouchableOpacity> : <React.Fragment key={idx}></React.Fragment>
         ))}
       </NativeActionSheet>
     );

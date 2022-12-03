@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FlatList, useWindowDimensions, View } from "react-native";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { IUser } from "../interfaces/auth";
@@ -15,6 +15,7 @@ import { getCurrentMedia } from "../store/Media";
 import { addNoteReaction, getCurrentNotes, loadNotes } from "../store/Notes";
 import { addSnippetReaction, getCurrentSnippets, loadSnippets } from "../store/Snippets";
 import useFirestore from "../utils/firestore";
+import DeleteModal, { DeleteAudioRef } from "./modal/DeleteModal";
 import NoteTab from "./NoteTab";
 import SnippetTab from "./SnippetTab";
 import TabScreen from "./TabScreen";
@@ -28,6 +29,7 @@ export const PlayerDetailScreen: React.FC<{
 }> = ({ setCurrentTab, slideRef, currentUser, currentClique, playlist }) => {
   const dispatch = useAppDispatch();
   const { width } = useWindowDimensions();
+  const handleDeleteRef = useRef<DeleteAudioRef>(null);
   const { updateNoteReactions, getAllMediaNote, updateSnippetReactions
     , getAllMediaSnippet, deleteMediaNote, deleteMediaSnippet } = useFirestore();
   const currentMedia = useAppSelector(getCurrentMedia);
@@ -157,41 +159,60 @@ export const PlayerDetailScreen: React.FC<{
       });
     }
   };
+  const handleDelete = (type: 'note' | 'snippet') => (id: string) => {
+    const foundItemToDelete = type === 'note' ? currentNotes.notes[id] : currentSnippets.snippets[id];
+    handleDeleteRef.current?.setItemToDelete({
+      id: foundItemToDelete.id,
+      name: foundItemToDelete.description,
+      type,
+    });
+    handleDeleteRef.current?.toggleShowDelete();
+  };
 
-  const handleDeleteNote = (noteId: string) => 
-    deleteMediaNote({
+  const handleDeleteNote = handleDelete('note');
+  const handleDeleteSnippet = handleDelete('snippet');
+  
+  const deleteRemoteNote = useCallback((noteId: string) => {
+    return deleteMediaNote({
       currentMedia: currentMedia.id,
       noteId
     })
+  }, [currentMedia])
 
-    const handleDeleteSnippet = (snippetId: string) => 
-    deleteMediaSnippet({
+  const deleteRemoteSnippet = useCallback((snippetId: string) => {
+    return deleteMediaSnippet({
       currentMedia: currentMedia.id,
       snippetId
     })
+  }, [currentMedia])
 
   return (
-    <TabScreen
-      {
-      ...{ setCurrentTab, slideRef }
-      }
-      data={playerScreenContent}
-      renderItem={({ item: { type } }) => (
-        <View style={{ paddingHorizontal: 15, width: width - 30 }}>
-          {type === 'Note' ? (
-            <NoteTab
-              {...{ currentNotes, currentUser, playlist, handleDeleteNote }}
-              handleReactions={handleAddReactionForNote}
-            />
-          ) : (
-            <SnippetTab
-              {...{ currentSnippets, currentUser, playlist, handleDeleteSnippet }}
-              handleReactions={handleAddReactionForSnippet}
-            />
-          )}
-        </View>
-      )}
-    />
+    <>
+      <TabScreen
+        {
+        ...{ setCurrentTab, slideRef }
+        }
+        data={playerScreenContent}
+        renderItem={({ item: { type } }) => (
+          <View style={{ paddingHorizontal: 15, width: width - 30 }}>
+            {type === 'Note' ? (
+              <NoteTab
+                {...{ currentNotes, currentUser, playlist }}
+                handleDelete={handleDeleteNote}
+                handleReactions={handleAddReactionForNote}
+              />
+            ) : (
+              <SnippetTab
+                {...{ currentSnippets, currentUser, playlist }}
+                handleDelete={handleDeleteSnippet}
+                handleReactions={handleAddReactionForSnippet}
+              />
+            )}
+          </View>
+        )}
+      />
+      <DeleteModal ref={handleDeleteRef} {...{currentMedia, deleteRemoteNote, deleteRemoteSnippet}} />
+    </>
   )
 }
-export default PlayerDetailScreen;
+export default memo(PlayerDetailScreen);
