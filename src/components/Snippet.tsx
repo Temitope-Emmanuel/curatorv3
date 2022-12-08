@@ -7,6 +7,7 @@ import { ISnippet } from '../interfaces/snippet';
 import { utilStyles } from '../utils/styles';
 import IconButton from './IconButton';
 import ProgressBar from './ProgressBarDef';
+import * as Animatable from 'react-native-animatable';
 import Reactions from './Reactions';
 
 interface SnippetProps extends ISnippet, BaseDatum {
@@ -26,6 +27,7 @@ const Snippet: React.FC<SnippetProps> = ({
   formatTime,
   owner,
   time,
+  status,
   handleReactions: handleAddReaction,
   handlePlaySnippet,
   disabled,
@@ -91,32 +93,34 @@ const Snippet: React.FC<SnippetProps> = ({
             <ProgressBar addRadius {...{ progress, duration }} />
             <Text style={{ color: TEXT_PRIMARY, fontWeight: '300' }}>{description}</Text>
           </View>
-          <IconButton
-            style={styles.playIcon}
-            name={active ? 'pause' : 'play'}
-            disabled={disabled && !active}
-            onPress={() =>
-              handlePlaySnippet({
-                description,
-                formatTime,
-                id,
-                owner,
-                reactions,
-                time,
-              })
-            }
-            size={20}
-            width={30}
-          />
+          <Animatable.View animation={status ? 'rubberBand': ''} duration={1000} style={{marginLeft: 'auto'}} iterationCount={5}>
+            <IconButton
+              style={styles.playIcon}
+              name={active ? 'pause' : 'play'}
+              disabled={disabled && !active}
+              onPress={() =>
+                handlePlaySnippet({
+                  description,
+                  formatTime,
+                  id,
+                  owner,
+                  reactions,
+                  time,
+                })
+              }
+              size={25}
+              width={30}
+            />
+          </Animatable.View>
         </View>
         <View style={{flexDirection: 'row'}}>
-          <Reactions
+          {/* <Reactions
             style={utilStyles.mrAuto}
             handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
             reactions={mappedReaction}
             currentUser={currentUser}
-          />
-          <Text style={utilStyles.timestamp}>{formatTime.start}</Text>
+          /> */}
+            <Text style={utilStyles.timestamp}>{formatTime.start}</Text>
         </View>
       </View>
     </TouchableOpacity>

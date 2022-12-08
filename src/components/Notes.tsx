@@ -72,12 +72,12 @@ const Notes: React.FC<NoteProps> = ({
           ) : undefined}
         </View>
         <View style={{flexDirection: 'row'}}>
-          <Reactions
+          {/* <Reactions
             currentUser={currentUser}
             style={utilStyles.mrAuto}
             handleReaction={handleReaction({ noteId: id, userId: owner.id })}
             reactions={mappedReaction}
-          />
+          /> */}
           <Text style={utilStyles.timestamp}>{timestamp}</Text>
         </View>
       </View>

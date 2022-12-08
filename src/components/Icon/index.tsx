@@ -2,7 +2,7 @@ import React from 'react';
 import {IconProps} from '../../interfaces/content';
 // import AccountIcon from './Account';
 import AddIcon from './Add';
-// import AddCommentIcon from './AddComment';
+import AddCommentIcon from './AddComment';
 import AddReactionIcon from './AddReaction';
 import ArrowBackIcon from './ArrowBack';
 import CheckIcon from './Check';
@@ -29,7 +29,7 @@ import PersonAddIcon from './PersonAdd';
 import PlayCircle from './PlayCircle';
 import PodcastIcon from './Podcast';
 import PublicIcon from './Public';
-// import QueueIcon from './Queue';
+import QueueIcon from './Queue';
 import RecommendIcon from './Recommend';
 import Replay10Icon from './Replay10';
 import SearchIcon from './Search';
@@ -79,8 +79,8 @@ export const IconImage: React.FC<
     	return <GraphicEqIcon width={width} />;
     case 'note':
     	return <NoteIcon width={width} />;
-    // case 'queue':
-    // 	return <QueueIcon width={width} />;
+    case 'queue':
+    	return <QueueIcon width={width} />;
     case 'fast-rewind':
     	return <FastRewindIcon {...{ width }} />;
     case 'replay-10':
@@ -101,8 +101,8 @@ export const IconImage: React.FC<
     	return <RecommendIcon {...{ width, fill }} />;
     // case 'taking-note':
     // 	return <TakingNoteIcon {...{ width }} />;
-    // case 'add-comment':
-    // 	return <AddCommentIcon {...{ width }} />;
+    case 'add-comment':
+    	return <AddCommentIcon {...{ width }} />;
     // case 'notifications-active':
     // 	return <NotificationActive fill={fill} {...{ width }} />;
     case 'person-add':

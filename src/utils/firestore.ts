@@ -10,6 +10,7 @@ import { INote } from '../interfaces/note';
 import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
 import { IClique } from '../interfaces/clique';
 import { firebase } from '@react-native-firebase/auth';
+import { notifyNewCliqueSubscriber } from './firebaseFunctions';
 
 const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia['id']) => {
   // First check if it exist
@@ -169,24 +170,35 @@ const sendInvitationToClique =
   (currentUser: IUser) => async (arg: { email: string; currentMedia: IMedia }) => {
     const foundUser = await findUser(arg.email);
     if (foundUser?.length) {
-      return firestore()
-        .collection('media')
-        .doc(arg.currentMedia.id)
-        .collection('cliques')
-        .doc(currentUser.uid)
-        .set(
-          {
-            members: firestore.FieldValue.arrayUnion({
-              displayName: foundUser[0].displayName,
-              email: foundUser[0].email,
-              photoURL: foundUser[0].photoURL,
-              status: 'member',
-              uid: foundUser[0].uid,
-            }),
-            memberEmails: firestore.FieldValue.arrayUnion(foundUser[0].email),
-          },
-          { merge: true }
-        );
+      const newSubscriber = foundUser[0];
+      // firestore()
+      //   .collection('media')
+      //   .doc(arg.currentMedia.id)
+      //   .collection('cliques')
+      //   .doc(currentUser.uid)
+      //   .set(
+      //     {
+      //       members: firestore.FieldValue.arrayUnion({
+      //         displayName: foundUser[0].displayName,
+      //         email: foundUser[0].email,
+      //         photoURL: foundUser[0].photoURL,
+      //         status: 'member',
+      //         uid: foundUser[0].uid,
+      //       }),
+      //       memberEmails: firestore.FieldValue.arrayUnion(foundUser[0].email),
+      //     },
+      //     { merge: true }
+      //   );
+      return notifyNewCliqueSubscriber({
+        recipient: {
+          fcmToken: newSubscriber.fcmToken,
+          name: newSubscriber.displayName
+        },
+        sender: {
+          media: arg.currentMedia.title,
+          name: currentUser.displayName || ''
+        }
+      })
     }
     throw new Error('user does not exist yet');
   };
@@ -450,6 +462,11 @@ const updateSnippetReactions = ({
       [updateKey]: snippet,
     });
 };
+
+export const updateUserDetails = ({ currentUser, fcmToken }: { currentUser: IUser['uid'], fcmToken: string }) =>
+  firestore().collection('users').doc(currentUser).set({
+    fcmToken
+  }, { merge: true })
 
 export const useFirestore = () => {
   const { currentUser } = useAppSelector(getAuth);

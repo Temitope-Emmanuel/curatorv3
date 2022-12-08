@@ -108,7 +108,10 @@ export const AddDatumModal = forwardRef<AddDatumModalRef, AddDatumModalProps>(
         },
         reactions: {},
       };
-      dispatch(addCurrentSnippets(newSnippet));
+      dispatch(addCurrentSnippets({
+        ...newSnippet,
+        status: 'new'
+      }));
       if (currentUser?.emailVerified) {
         handleSaveSnippetRemote(newSnippet, currentMedia);
       }

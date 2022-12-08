@@ -50,23 +50,26 @@ export const snippetSlice = createSlice({
         currentPlayingSnippet: state.currentPlayingSnippet,
       };
     },
-    addCurrentSnippets: (state, action: PayloadAction<ISnippet>) => ({
-      ...state,
-      snippets: {
-        ...state.snippets,
-        [state.currentSnippets.mediaId]: {
-          ...state.currentSnippets.snippets,
-          [action.payload.id]: action.payload,
-        },
-      },
-      currentSnippets: {
-        mediaId: state.currentSnippets.mediaId,
+    addCurrentSnippets: (state, action: PayloadAction<ISnippet>) => {
+      const {type, status, ...newSnippet} = action.payload;
+      return({
+        ...state,
         snippets: {
-          ...state.currentSnippets.snippets,
-          [action.payload.id]: action.payload,
+          ...state.snippets,
+          [state.currentSnippets.mediaId]: {
+            ...state.currentSnippets.snippets,
+            [action.payload.id]: newSnippet,
+          },
         },
-      },
-    }),
+        currentSnippets: {
+          mediaId: state.currentSnippets.mediaId,
+          snippets: {
+            ...state.currentSnippets.snippets,
+            [action.payload.id]: action.payload,
+          },
+        },
+      })
+    },
     addSnippetReaction: (
       state,
       action: PayloadAction<{ snippetId: string; reaction: ReactionType; userId: string }>

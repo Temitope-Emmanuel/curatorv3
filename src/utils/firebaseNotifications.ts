@@ -13,13 +13,13 @@ const FCM_TOKEN = 'FCM_TOKEN';
 
 export const getFCMToken = async () => {
     let fcmToken = await AsyncStorage.getItem(FCM_TOKEN);
-    console.log(fcmToken)
     if (fcmToken === null) {
         try {
             fcmToken = await messaging().getToken();
             if (fcmToken) {
                 AsyncStorage.setItem(FCM_TOKEN, fcmToken);
             }
+            return fcmToken;
         } catch (err: any) {
             toast({
                 type: 'error',

@@ -45,7 +45,7 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
   );
 
   const renderItem = ({
-    item: { description, id, owner, reactions, time, formatTime },
+    item: { description, id, owner, reactions, time, formatTime, status },
   }: {
     item: ISnippet;
   }) => (
@@ -57,7 +57,7 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
       handlePlaySnippet={handlePlaySnippet}
       active={currentPlayingSnippet.id === id}
       isAuthor={currentUser?.uid === owner?.id}
-      {...{ description, formatTime, id, owner, reactions, time, handleDelete, handleReactions }}
+      {...{ description, formatTime, id, owner, reactions, time, handleDelete, handleReactions, status }}
     />
   );
 

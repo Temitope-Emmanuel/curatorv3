@@ -28,21 +28,13 @@ import { setUser, clearUser } from './src/store/Auth';
 import { UploadServiceProvider } from './src/providers/Uploading';
 import UpdateMedia from './src/components/UpdateMedia';
 import Toast from 'react-native-toast-message';
-import { requestUserPermission, getFCMToken, notificationListener } from './src/utils/firebaseNotifications';
+import { notificationListener } from './src/utils/firebaseNotifications';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
   const dispatch = useAppDispatch();
   const { startPlayer } = usePlayerService();
-
-  const handleRequestForAccess = async () => {
-    const enabled = await requestUserPermission();
-    if (enabled) {
-      getFCMToken();
-    }
-  }
-
 
   const onAuthStateChanged = (user: IUser | null) => {
     if (user) {
@@ -75,7 +67,6 @@ const App = () => {
   useEffect(() => {
     startPlayer();
     notificationListener();
-    handleRequestForAccess();
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber;
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,7 +76,7 @@ const App = () => {
     <>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName={ROUTES.HomeScreen}
+          initialRouteName={ROUTES.SplashScreen}
           screenOptions={{
             headerShown: false,
           }}

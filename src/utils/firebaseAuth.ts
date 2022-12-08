@@ -46,7 +46,7 @@ export const useFirebaseAuth = () => {
             } = newUser;
             const newCurrentUser = {
               displayName: providerData[0]?.displayName || '',
-              email: providerData[0]?.email || '',
+              email: providerData[0]?.email?.toLowerCase() || '',
               emailVerified: true,
               metadata,
               phoneNumber: providerData[0]?.phoneNumber || '',
@@ -68,6 +68,7 @@ export const useFirebaseAuth = () => {
             });
           });
       }
+      return foundUser?.length ? foundUser[0] : undefined;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       toast({

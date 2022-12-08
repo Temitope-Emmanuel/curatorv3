@@ -73,7 +73,7 @@ const ToggleContainer: React.FC<{
         <Animatable.View animation={animateCreateButton ? pulse: ''} ref={animateViewRef} useNativeDriver easing='ease-in-out' duration={1500} iterationCount='infinite' >
           <IconButton
             onPress={currentTabIsNote ? toggleNoteModal : toggleSnippetModal}
-            name={currentTabIsNote ? 'note' : 'graphic-eq'}
+            name={currentTabIsNote ? 'add-comment' : 'queue'}
             size={30}
           />
         </Animatable.View>
