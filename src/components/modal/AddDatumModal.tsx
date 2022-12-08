@@ -76,7 +76,10 @@ export const AddDatumModal = forwardRef<AddDatumModalRef, AddDatumModalProps>(
         reactions: {},
       };
 
-      dispatch(addCurrentNotes(newNote));
+      dispatch(addCurrentNotes({
+        ...newNote,
+        status: 'new'
+      }));
       if (currentUser?.emailVerified) {
         handleSaveNoteRemote(newNote, currentMedia);
       }

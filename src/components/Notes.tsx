@@ -5,6 +5,7 @@ import { BaseDatum } from '../interfaces/datum';
 import { INote } from '../interfaces/note';
 import { ReactionType } from '../interfaces/reaction';
 import { utilStyles } from '../utils/styles';
+import * as Animatable from 'react-native-animatable';
 import Reactions from './Reactions';
 
 interface NoteProps extends INote, BaseDatum {
@@ -23,6 +24,7 @@ const Notes: React.FC<NoteProps> = ({
   time,
   isAuthor,
   currentUser,
+  status
 }) => {
   const mappedReaction = useMemo(
     () =>
@@ -78,7 +80,9 @@ const Notes: React.FC<NoteProps> = ({
             handleReaction={handleReaction({ noteId: id, userId: owner.id })}
             reactions={mappedReaction}
           /> */}
-          <Text style={utilStyles.timestamp}>{timestamp}</Text>
+          <Animatable.View animation={status ? 'rubberBand': ''} duration={1000} style={{marginLeft: 'auto'}} iterationCount={5}>
+            <Text style={utilStyles.timestamp}>{timestamp}</Text>
+          </Animatable.View>
         </View>
       </View>
     </TouchableOpacity>

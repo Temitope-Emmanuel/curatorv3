@@ -9,4 +9,5 @@ export interface BaseEffect {
   reactions: {
     [userId: string]: ReactionType;
   };
+  status?: 'new';
 }

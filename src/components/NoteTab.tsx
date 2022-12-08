@@ -21,7 +21,7 @@ const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReac
   };
 
   const renderItem = ({
-    item: { description, id, owner, reactions, time, timestamp },
+    item: { description, id, owner, reactions, time, timestamp, status },
   }: {
     item: INote;
   }) => (
@@ -30,7 +30,7 @@ const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReac
       isAuthor={currentUser?.uid === owner?.id}
       handlePress={handleNotePress}
       key={id}
-      {...{ description, id, owner, reactions, time, timestamp, handleDelete, handleReactions }}
+      {...{ description, id, owner, reactions, time, timestamp, handleDelete, handleReactions, status }}
     />
   );
 

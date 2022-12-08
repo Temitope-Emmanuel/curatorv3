@@ -46,29 +46,32 @@ export const noteSlice = createSlice({
         },
       };
     },
-    addCurrentNotes: (state, action: PayloadAction<INote>) => ({
-      ...state,
-      notes: {
-        ...state.notes,
-        [state.currentNotes.mediaId]: {
-          ...state.currentNotes.notes,
-          [action.payload.id]: {
-            ...action.payload,
-            type: 'local',
-          },
-        },
-      },
-      currentNotes: {
-        mediaId: state.currentNotes.mediaId,
+    addCurrentNotes: (state, action: PayloadAction<INote>) => {
+      const {type, status, ...newNote} = action.payload;
+      return({
+        ...state,
         notes: {
-          ...state.currentNotes.notes,
-          [action.payload.id]: {
-            ...action.payload,
-            type: 'local',
+          ...state.notes,
+          [state.currentNotes.mediaId]: {
+            ...state.currentNotes.notes,
+            [action.payload.id]: {
+              ...newNote,
+              // type: 'local',
+            },
           },
         },
-      },
-    }),
+        currentNotes: {
+          mediaId: state.currentNotes.mediaId,
+          notes: {
+            ...state.currentNotes.notes,
+            [action.payload.id]: {
+              ...action.payload,
+              // type: 'local',
+            },
+          },
+        },
+      })
+    },
     addNoteReaction: (
       state,
       action: PayloadAction<{ noteId: string; reaction: ReactionType; userId: string }>

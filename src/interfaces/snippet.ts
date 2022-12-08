@@ -9,7 +9,6 @@ export interface ISnippet extends BaseEffect {
     start: string;
     end: string;
   };
-  status?: 'new'
 }
 
 export interface NewSnippet {

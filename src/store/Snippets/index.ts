@@ -58,14 +58,20 @@ export const snippetSlice = createSlice({
           ...state.snippets,
           [state.currentSnippets.mediaId]: {
             ...state.currentSnippets.snippets,
-            [action.payload.id]: newSnippet,
+            [action.payload.id]: {
+              ...newSnippet,
+              // type: 'local',
+            },
           },
         },
         currentSnippets: {
           mediaId: state.currentSnippets.mediaId,
           snippets: {
             ...state.currentSnippets.snippets,
-            [action.payload.id]: action.payload,
+            [action.payload.id]: {
+              ...action.payload,
+              // type: 'local'
+            },
           },
         },
       })

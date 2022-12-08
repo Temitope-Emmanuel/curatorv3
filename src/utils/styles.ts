@@ -21,7 +21,6 @@ export const utilStyles = StyleSheet.create({
   },
   timestamp: {
     fontSize: 12,
-    marginLeft: 'auto',
     fontWeight: '800',
     color: TEXT_PRIMARY,
   },
