@@ -629,6 +629,9 @@ PODS:
   - Firebase/Firestore (10.2.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 10.2.0)
+  - Firebase/Messaging (10.2.0):
+    - Firebase/CoreOnly
+    - FirebaseMessaging (~> 10.2.0)
   - Firebase/Storage (10.2.0):
     - Firebase/CoreOnly
     - FirebaseStorage (~> 10.2.0)
@@ -672,6 +675,15 @@ PODS:
     - GoogleUtilities/Environment (~> 7.8)
     - GoogleUtilities/UserDefaults (~> 7.8)
     - PromisesObjC (~> 2.1)
+  - FirebaseMessaging (10.2.0):
+    - FirebaseCore (~> 10.0)
+    - FirebaseInstallations (~> 10.0)
+    - GoogleDataTransport (~> 9.2)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GoogleUtilities/Reachability (~> 7.8)
+    - GoogleUtilities/UserDefaults (~> 7.8)
+    - nanopb (< 2.30910.0, >= 2.30908.0)
   - FirebaseStorage (10.2.0):
     - FirebaseAppCheckInterop (~> 10.0)
     - FirebaseAuthInterop (~> 10.0)
@@ -1011,9 +1023,9 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-slider (4.3.3):
     - React-Core
-  - react-native-track-player (2.1.4):
+  - react-native-track-player (3.1.0):
     - React-Core
-    - SwiftAudioEx (= 0.14.7)
+    - SwiftAudioEx (= 0.15.2)
   - React-perflogger (0.70.6)
   - React-RCTActionSheet (0.70.6):
     - React-Core/RCTActionSheetHeaders (= 0.70.6)
@@ -1101,6 +1113,11 @@ PODS:
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - React-Core
     - RNFBApp
+  - RNFBMessaging (16.4.6):
+    - Firebase/Messaging (= 10.2.0)
+    - FirebaseCoreExtension (= 10.2.0)
+    - React-Core
+    - RNFBApp
   - RNFBStorage (16.4.6):
     - Firebase/Storage (= 10.2.0)
     - React-Core
@@ -1117,7 +1134,7 @@ PODS:
     - React-RCTImage
   - RNSVG (13.6.0):
     - React-Core
-  - SwiftAudioEx (0.14.7)
+  - SwiftAudioEx (0.15.2)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -1166,6 +1183,7 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
+  - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
   - "RNFBStorage (from `../node_modules/@react-native-firebase/storage`)"
   - RNFS (from `../node_modules/react-native-fs`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
@@ -1189,6 +1207,7 @@ SPEC REPOS:
     - FirebaseCrashlytics
     - FirebaseFirestore
     - FirebaseInstallations
+    - FirebaseMessaging
     - FirebaseStorage
     - fmt
     - GoogleDataTransport
@@ -1292,6 +1311,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/crashlytics"
   RNFBFirestore:
     :path: "../node_modules/@react-native-firebase/firestore"
+  RNFBMessaging:
+    :path: "../node_modules/@react-native-firebase/messaging"
   RNFBStorage:
     :path: "../node_modules/@react-native-firebase/storage"
   RNFS:
@@ -1325,6 +1346,7 @@ SPEC CHECKSUMS:
   FirebaseCrashlytics: df7406152189d48346deafb716806d7bd9ebb573
   FirebaseFirestore: bda7a1ca8c19319a2acd2761cd4b962022c1d5ea
   FirebaseInstallations: 004915af170935e3a583faefd5f8bc851afc220f
+  FirebaseMessaging: cc9f40f5b7494680f3844d08e517e92aa4e8d9f7
   FirebaseStorage: e7b3fdc90b579cda35e5a0e4c6b206325766e75a
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
@@ -1359,7 +1381,7 @@ SPEC CHECKSUMS:
   react-native-document-picker: f5ec1a712ca2a975c233117f044817bb8393cad4
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-slider: 7d19220da2f2ae7cbb9aa80127cb73c597fa221f
-  react-native-track-player: 2ea788d4fae0efe18b85cd3fcda92e7d40000d4b
+  react-native-track-player: 12c7bdc776f11c382c11fecdade3743ebe0af78c
   React-perflogger: 8c79399b0500a30ee8152d0f9f11beae7fc36595
   React-RCTActionSheet: 7316773acabb374642b926c19aef1c115df5c466
   React-RCTAnimation: 5341e288375451297057391227f691d9b2326c3d
@@ -1378,13 +1400,14 @@ SPEC CHECKSUMS:
   RNFBAuth: 4ca816efc990ef69e9ca9fed57348a876470b821
   RNFBCrashlytics: ab36db027cf802458a0e024a009fbe2def21e3d0
   RNFBFirestore: adb3628074d1c2116e851257d999f0292ddb823a
+  RNFBMessaging: f7a90ac199e1bc771e9e09058ed0354efd047182
   RNFBStorage: c34d21bdfd6f3dd9560edaca5d5c7b6576bcf00d
   RNFS: 4ac0f0ea233904cb798630b3c077808c06931688
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNGoogleSignin: 3db2d849581299f425f5b61b90cb482a9e68c7af
   RNScreens: 34cc502acf1b916c582c60003dc3089fa01dc66d
   RNSVG: 3a79c0c4992213e4f06c08e62730c5e7b9e4dc17
-  SwiftAudioEx: 3a4024e48f3b3e45dac6bf2668d7adbe7b83f50e
+  SwiftAudioEx: 1974c2eb942c9b54f58c3d3f5d704da527e2c5ba
   Yoga: 99caf8d5ab45e9d637ee6e0174ec16fbbb01bcfc
 
 PODFILE CHECKSUM: 9a430411c1fdf56465bb2e55deec42661080387c
