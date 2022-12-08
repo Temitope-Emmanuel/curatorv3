@@ -97,7 +97,7 @@ const Snippet: React.FC<SnippetProps> = ({
             <IconButton
               style={styles.playIcon}
               name={active ? 'pause' : 'play'}
-              disabled={disabled && !active}
+              // disabled={disabled && !active}
               onPress={() =>
                 handlePlaySnippet({
                   description,

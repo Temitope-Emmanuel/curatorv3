@@ -30,7 +30,7 @@ export class TrackPlayerClass {
       await TrackPlayer.updateOptions({
         backwardJumpInterval: 5,
         forwardJumpInterval: 5,
-        // progressUpdateEventInterval: 3,
+        progressUpdateEventInterval: 3,
         capabilities: [
           Capability.Play,
           Capability.Pause,
