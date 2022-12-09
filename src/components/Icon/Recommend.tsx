@@ -4,8 +4,8 @@ import { SvgXml } from 'react-native-svg';
 const RecommendIcon: React.FC<{
   width: number;
 }> = ({ width }) => {
-	const xmlString = `<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <mask id="mask0_350_258" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="17" height="17">
+	const xmlString = `<svg width="${width}" height="${width}" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <mask id="mask0_350_258" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="${width}" height="${width}">
   <rect x="0.134338" y="0.631287" width="15.8978" height="15.8978" fill="#D9D9D9"/>
   </mask>
   <g mask="url(#mask0_350_258)">
