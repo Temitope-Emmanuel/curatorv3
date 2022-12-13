@@ -9,6 +9,9 @@ import IconButton from './IconButton';
 import ProgressBar from './ProgressBarDef';
 import * as Animatable from 'react-native-animatable';
 import Reactions from './Reactions';
+import Animated, { SlideInDown, SlideInLeft, SlideOutDown, SlideOutRight } from 'react-native-reanimated';
+import { useAppSelector } from '../hooks/redux';
+import { getShowReaction } from '../store/App';
 
 interface SnippetProps extends ISnippet, BaseDatum {
   active: boolean;
@@ -36,6 +39,9 @@ const Snippet: React.FC<SnippetProps> = ({
   progress = 100,
   handleDelete,
   currentUser,
+  toggleShowMore,
+  isActive, 
+  isTheActive
 }) => {
   const mappedReaction = useMemo(
     () =>
@@ -63,10 +69,13 @@ const Snippet: React.FC<SnippetProps> = ({
     [handleAddReaction]
   );
 
+  const showActive = useMemo(() => isActive && !isTheActive, [isActive, isTheActive])
+  const shouldShowEmoji = useAppSelector(getShowReaction);
   return (
     <TouchableOpacity
-      onLongPress={isAuthor ? () => handleDelete(id) : undefined}
-      style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse' }]}
+      onLongPress={toggleShowMore}
+      // onLongPress={isAuthor ? () => handleDelete(id) : undefined}
+      style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse', opacity: !showActive ? 1 : .3 }]}
     >
       {owner && owner.photoURL && owner.id !== currentUser && (
         <Image
@@ -89,10 +98,21 @@ const Snippet: React.FC<SnippetProps> = ({
             },
           ]}
         >
-          <View style={{ width: '80%' }}>
+          {
+            isTheActive && shouldShowEmoji ? 
+          <Animated.View style={{ width: '80%' }} key='1' entering={SlideInLeft.duration(400)} exiting={SlideOutRight.duration(400)}>
+            <Reactions
+                style={utilStyles.mrAuto}
+                handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
+                reactions={mappedReaction}
+                currentUser={currentUser}
+              />
+          </Animated.View> :
+          <Animated.View style={{ width: '80%' }} key='1' entering={SlideInLeft.duration(400)} exiting={SlideOutRight.duration(400)}>
             <ProgressBar addRadius {...{ progress, duration }} />
             <Text style={{ color: TEXT_PRIMARY, fontWeight: '300' }}>{description}</Text>
-          </View>
+          </Animated.View>
+          }
           <Animatable.View animation={status ? 'rubberBand': ''} duration={1000} style={{marginLeft: 'auto'}} iterationCount={5}>
             <IconButton
               style={styles.playIcon}
@@ -114,12 +134,15 @@ const Snippet: React.FC<SnippetProps> = ({
           </Animatable.View>
         </View>
         <View style={{flexDirection: 'row'}}>
-          {/* <Reactions
-            style={utilStyles.mrAuto}
-            handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
-            reactions={mappedReaction}
-            currentUser={currentUser}
-          /> */}
+          {/* {
+            isTheActive &&
+            <Reactions
+              style={utilStyles.mrAuto}
+              handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
+              reactions={mappedReaction}
+              currentUser={currentUser}
+            />
+          } */}
             <Text style={utilStyles.timestamp}>{formatTime.start}</Text>
         </View>
       </View>

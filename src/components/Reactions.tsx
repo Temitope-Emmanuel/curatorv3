@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 import { TEXT_PRIMARY } from '../constants/colors';
+import { IconProps } from '../interfaces/content';
 import { IReaction, ReactionType } from '../interfaces/reaction';
 import IconButton from './IconButton';
 
@@ -11,9 +12,11 @@ interface ReactionProps {
   handleReaction: (reaction: ReactionType) => void;
 }
 
+const iconProps:IconProps['name'][] = ['recommend', 'favorite', 'star', 'local-fire-department']
+
 const Reactions: React.FC<ReactionProps> = ({ reactions, style, handleReaction, currentUser }) => (
-  <View style={[{ flexDirection: 'row' }, style]}>
-    {Object.entries(reactions).map(([reaction, item]) => (
+  <View style={[{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }, style]}>
+    {/* {Object.entries(reactions).map(([reaction, item]) => (
       <View key={reaction} style={[styles.reactionContainer]}>
         <IconButton
           style={{
@@ -25,9 +28,13 @@ const Reactions: React.FC<ReactionProps> = ({ reactions, style, handleReaction, 
           name={reaction as ReactionType}
           size={20}
         />
-        {/* {item.length ? <Text style={styles.reactionAmt}>{item.length}</Text> : undefined} */}
       </View>
-    ))}
+    ))} */}
+    {
+      iconProps.map(item => (
+        <IconButton size={30} name={item} />
+      ))
+    }
   </View>
 );
 

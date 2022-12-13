@@ -24,7 +24,10 @@ const Notes: React.FC<NoteProps> = ({
   time,
   isAuthor,
   currentUser,
-  status
+  status,
+  toggleShowMore,
+  isActive,
+  isTheActive
 }) => {
   const mappedReaction = useMemo(
     () =>
@@ -51,11 +54,14 @@ const Notes: React.FC<NoteProps> = ({
       handleAddReaction({ id: noteId, userId, reaction });
     };
 
+    const isSelected = useMemo(() => isActive && !isTheActive ? .5 : 1, [isActive, isTheActive])
+
   return (
     <TouchableOpacity
       style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse' }]}
       onPress={() => handlePress({ time })}
-      onLongPress={isAuthor ? () => handleDelete(id) : undefined}
+      onLongPress={toggleShowMore}
+      // onLongPress={isAuthor ? () => handleDelete(id) : undefined}
     >
       {owner.photoURL && owner.id !== currentUser && (
         <Image

@@ -21,6 +21,9 @@ import useToggle from '../hooks/useToggle';
 import toast from '../hooks/useToast';
 import useFirestore from '../utils/firestore';
 import PlayerDetailScreen from '../components/PlayerDetailScreen';
+import MoreOption from '../components/MoreOption';
+import { getShowMore } from '../store/App';
+import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown, } from 'react-native-reanimated';
 
 type Props = StackScreenProps<RootStackParamList, 'PlayerScreen'>;
 
@@ -33,6 +36,7 @@ export type PlayerTab = {
 
 const PlayerScreen: React.FC<Props> = () => {
     const { currentUser } = useAppSelector(getAuth);
+    const showMore = useAppSelector(getShowMore);
     const { playlist } = usePlayerService();
     const currentMedia = useAppSelector(getCurrentMedia);
     const { sendInvitationToClique, getMediaClique } = useFirestore();
@@ -139,14 +143,24 @@ const PlayerScreen: React.FC<Props> = () => {
                     }}
                 />
             </View>
-            <ToggleButton
-                active={currentTab}
-                onPress={toggleCurrentTab as (label: string) => void}
-                buttons={[
-                    { icon: 'graphic-eq', label: 'Snippet' },
-                    { icon: 'note', label: 'Note' },
-                ]}
-            />
+            <View style={styles.toggleContainer}>
+                {
+                    showMore ?
+                        <Animated.View key='1' entering={SlideInDown.duration(400)} exiting={SlideOutDown.duration(400)}>
+                            <MoreOption />
+                        </Animated.View> :
+                        <Animated.View key='2' entering={SlideInDown.duration(400)} exiting={SlideOutDown.duration(400)}>
+                            <ToggleButton
+                                active={currentTab}
+                                onPress={toggleCurrentTab as (label: string) => void}
+                                buttons={[
+                                    { icon: 'graphic-eq', label: 'Snippet' },
+                                    { icon: 'note', label: 'Note' },
+                                ]}
+                            />
+                        </Animated.View>
+                }
+            </View>
             <PlayerScreenProgressBar />
             <ActionContainer />
             <CliqueInvite
@@ -186,6 +200,7 @@ const styles = StyleSheet.create({
         backgroundColor: BG_TERTIARY,
         marginVertical: 20,
     },
+    toggleContainer: { width: '100%', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', height: 45, marginVertical: 2.5 }
 })
 
 export default PlayerScreen;

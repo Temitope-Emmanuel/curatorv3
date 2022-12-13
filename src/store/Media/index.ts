@@ -21,7 +21,7 @@ export const mediaSlice = createSlice({
   reducers: {
     addToPlaylist: (state, action: PayloadAction<IMedia>) => ({
       ...state,
-      playlist: state.playlist.concat(action.payload),
+      playlist: state.playlist.concat(action.payload).sort((a,b) => a.title < b.title ? -1 : 1),
     }),
     deleteMedia: (state, action: PayloadAction<string>) => {
       state.playlist = state.playlist.filter((item) => item.id !== action.payload);

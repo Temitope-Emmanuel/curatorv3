@@ -11,6 +11,7 @@ import { SubscriberType } from "../interfaces/Subscriber";
 import { TrackPlayerClass } from "../providers/TrackPlayer";
 import { playerScreenContent } from "../screens/data";
 import { PlayerScreenType, PlayerTab } from "../screens/PlayerScreen";
+import { addData, toggleShowMore } from "../store/App";
 import { getCurrentMedia } from "../store/Media";
 import { addNoteReaction, getCurrentNotes, loadNotes } from "../store/Notes";
 import { addSnippetReaction, getCurrentSnippets, loadSnippets } from "../store/Snippets";
@@ -186,6 +187,11 @@ export const PlayerDetailScreen: React.FC<{
     })
   }, [currentMedia])
 
+  const handleToggleShowMore = (arg: {id: string; type: 'note' | 'snippet'}) => {
+    dispatch(toggleShowMore({show: undefined}))
+    dispatch(addData(arg))
+  }
+
   return (
     <>
       <TabScreen
@@ -199,12 +205,14 @@ export const PlayerDetailScreen: React.FC<{
               <NoteTab
                 {...{ currentNotes, currentUser, playlist }}
                 handleDelete={handleDeleteNote}
+                toggleShowMore={handleToggleShowMore}
                 handleReactions={handleAddReactionForNote}
               />
             ) : (
               <SnippetTab
                 {...{ currentSnippets, currentUser, playlist }}
                 handleDelete={handleDeleteSnippet}
+                toggleShowMore={handleToggleShowMore}
                 handleReactions={handleAddReactionForSnippet}
               />
             )}

@@ -23,7 +23,7 @@ const ToggleButton: React.FC<{
         ]}
         onPress={() => onPress(label)}
       >
-        <IconImage name={icon} width={30} />
+        <IconImage name={icon} width={42} />
         <Text style={styles.toggleText}>{label}</Text>
       </TouchableOpacity>
     ))}
@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#24251D',
     overflow: 'hidden',
     flexDirection: 'row',
-    marginBottom: 15,
+    height: '100%'
   },
   toggle: {
     paddingVertical: 5,

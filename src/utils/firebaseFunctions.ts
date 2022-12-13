@@ -14,4 +14,6 @@ interface notifyNewSubscriberArg {
 export const notifyNewCliqueSubscriber = (arg: notifyNewSubscriberArg) => 
     functions().httpsCallable('sendPushNotificationForNewCliquer')(arg).then((response: any) => {
         console.log('this is the response', response.results)
+    }).catch(err => {
+      console.log('there\'s been an errrr', err)
     })

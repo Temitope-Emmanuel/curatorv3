@@ -2,10 +2,12 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useProgress } from 'react-native-track-player';
 import { BG_TERTIARY, TEXT_TERTIARY } from '../constants/colors';
+import { useAppSelector } from '../hooks/redux';
 import { defaultSnippet, ISnippet } from '../interfaces/snippet';
 import { BaseTabProps } from '../interfaces/tab';
 import usePlayerService from '../providers/TrackPlayer';
 import { RootState } from '../store';
+import { getData } from '../store/App';
 import IconImage from './Icon';
 import Snippet from './Snippet';
 
@@ -13,7 +15,7 @@ interface SnippetTabProps extends BaseTabProps {
   currentSnippets: RootState['snippets']['currentSnippets'];
 }
 
-const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist, handleDelete }) => {
+const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist, handleDelete, toggleShowMore }) => {
   const { position } = useProgress();
   const { setPlayingSnippet } = usePlayerService();
   const [currentPlayingSnippet, setCurrentPlayingSnippet] = useState<ISnippet>(defaultSnippet);
@@ -21,6 +23,7 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
     () => Object.values(currentSnippets.snippets).sort((a, b) => a.time.start - b.time.start),
     [currentSnippets]
   );
+  const activeData = useAppSelector(getData);
   useEffect(() => {
     if (currentPlayingSnippet.id) {
       setPlayingSnippet(true)
@@ -55,8 +58,11 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
       currentUser={currentUser?.uid ?? ''}
       disabled={!!currentPlayingSnippet.id}
       handlePlaySnippet={handlePlaySnippet}
+      isActive={activeData.type === 'snippet'}
+      isTheActive={activeData.id === id}
       active={currentPlayingSnippet.id === id}
       isAuthor={currentUser?.uid === owner?.id}
+      toggleShowMore={() => toggleShowMore({id, type: 'snippet'})}
       {...{ description, formatTime, id, owner, reactions, time, handleDelete, handleReactions, status }}
     />
   );

@@ -40,6 +40,11 @@ import SilentIcon from './Silent';
 import SplashScreen3Svg from './splashScreen3';
 // import TakingNoteIcon from './TakingNote';
 import UploadIcon from './Upload';
+import EditIcon from './Edit';
+import VerifiedIcon from './Verified';
+import DeleteIcon from './Delete';
+import StarIcon from './Star';
+import AlternateEmailIcon from './AlternateEmail'
 
 export const IconImage: React.FC<
   Pick<IconProps, 'name' | 'width' | 'fill'>
@@ -70,7 +75,7 @@ export const IconImage: React.FC<
     // case 'play-circle':
     // 	return <PlayCircle width={width} />;
     case 'arrow-back':
-    	return <ArrowBackIcon width={width} />;
+    	return <ArrowBackIcon {...{width, fill}} />;
     case 'dropdown':
     	return <DropdownIcon width={width} />;
     case 'empty-audio':
@@ -114,7 +119,7 @@ export const IconImage: React.FC<
     // case 'account':
     // 	return <AccountIcon {...{ width }} />;
     case 'delete-forever':
-    	return <DeleteForeverIcon {...{ width }} />;
+    	return <DeleteForeverIcon {...{ width, fill }} />;
     case 'edit-border':
     	return <EditBorderIcon {...{ width }} />;
     case 'pause':
@@ -127,6 +132,16 @@ export const IconImage: React.FC<
     	return <EmptySnippetIcon {...{ width }} />;
     case 'upload':
     	return <UploadIcon {...{ width }} />;
+    case 'edit':
+    	return <EditIcon {...{ width, fill }} />;
+    case 'verified':
+    	return <VerifiedIcon {...{ width }} />;
+    case 'delete':
+    	return <DeleteIcon {...{ width }} />;
+    case 'star':
+    	return <StarIcon {...{ width }} />;
+    case 'alternate-email':
+    	return <AlternateEmailIcon {...{ width }} />;
     default:
       return <SplashScreen3Svg width={width} />;
   }

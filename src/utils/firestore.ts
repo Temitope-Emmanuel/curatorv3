@@ -171,24 +171,26 @@ const sendInvitationToClique =
     const foundUser = await findUser(arg.email);
     if (foundUser?.length) {
       const newSubscriber = foundUser[0];
-      // firestore()
-      //   .collection('media')
-      //   .doc(arg.currentMedia.id)
-      //   .collection('cliques')
-      //   .doc(currentUser.uid)
-      //   .set(
-      //     {
-      //       members: firestore.FieldValue.arrayUnion({
-      //         displayName: foundUser[0].displayName,
-      //         email: foundUser[0].email,
-      //         photoURL: foundUser[0].photoURL,
-      //         status: 'member',
-      //         uid: foundUser[0].uid,
-      //       }),
-      //       memberEmails: firestore.FieldValue.arrayUnion(foundUser[0].email),
-      //     },
-      //     { merge: true }
-      //   );
+      if(newSubscriber.fcmToken){
+        firestore()
+          .collection('media')
+          .doc(arg.currentMedia.id)
+          .collection('cliques')
+          .doc(currentUser.uid)
+          .set(
+            {
+              members: firestore.FieldValue.arrayUnion({
+                displayName: newSubscriber.displayName,
+                email: newSubscriber.email,
+                photoURL: newSubscriber.photoURL,
+                status: 'member',
+                uid: newSubscriber.uid,
+              }),
+              memberEmails: firestore.FieldValue.arrayUnion(newSubscriber.email),
+            },
+            { merge: true }
+          );
+      }
       return notifyNewCliqueSubscriber({
         recipient: {
           fcmToken: newSubscriber.fcmToken,
