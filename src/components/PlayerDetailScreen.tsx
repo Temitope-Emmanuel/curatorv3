@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { FlatList, useWindowDimensions, View } from "react-native";
 import { useAppDispatch, useAppSelector } from "../hooks/redux";
 import { IUser } from "../interfaces/auth";
@@ -11,12 +11,11 @@ import { SubscriberType } from "../interfaces/Subscriber";
 import { TrackPlayerClass } from "../providers/TrackPlayer";
 import { playerScreenContent } from "../screens/data";
 import { PlayerScreenType, PlayerTab } from "../screens/PlayerScreen";
-import { addData, toggleShowMore } from "../store/App";
+import { ActiveDataType, addData, getData, toggleShowMore } from "../store/App";
 import { getCurrentMedia } from "../store/Media";
 import { addNoteReaction, getCurrentNotes, loadNotes } from "../store/Notes";
 import { addSnippetReaction, getCurrentSnippets, loadSnippets } from "../store/Snippets";
 import useFirestore from "../utils/firestore";
-import DeleteModal, { DeleteAudioRef } from "./modal/DeleteModal";
 import NoteTab from "./NoteTab";
 import SnippetTab from "./SnippetTab";
 import TabScreen from "./TabScreen";
@@ -30,15 +29,15 @@ export const PlayerDetailScreen: React.FC<{
 }> = ({ setCurrentTab, slideRef, currentUser, currentClique, playlist }) => {
   const dispatch = useAppDispatch();
   const { width } = useWindowDimensions();
-  const handleDeleteRef = useRef<DeleteAudioRef>(null);
   const { updateNoteReactions, getAllMediaNote, updateSnippetReactions
-    , getAllMediaSnippet, deleteMediaNote, deleteMediaSnippet } = useFirestore();
+    , getAllMediaSnippet } = useFirestore();
   const currentMedia = useAppSelector(getCurrentMedia);
   const currentUserNotes = useAppSelector(getCurrentNotes);
   const currentUserSnippets = useAppSelector(getCurrentSnippets);
   const [remoteNote, setRemoteNote] = useState<RemoteNote[]>([]);
   const [remoteSnippet, setRemoteSnippet] = useState<RemoteSnippet[]>([]);
   const [subscriber, setSubscriber] = useState<SubscriberType[]>([]);
+  const activeData = useAppSelector(getData);
 
   const usersIds = useMemo(
     () => currentClique.members.map((item) => item.uid),
@@ -160,40 +159,13 @@ export const PlayerDetailScreen: React.FC<{
       });
     }
   };
-  const handleDelete = (type: 'note' | 'snippet') => (id: string) => {
-    const foundItemToDelete = type === 'note' ? currentNotes.notes[id] : currentSnippets.snippets[id];
-    handleDeleteRef.current?.setItemToDelete({
-      id: foundItemToDelete.id,
-      name: foundItemToDelete.description,
-      type,
-    });
-    handleDeleteRef.current?.toggleShowDelete();
-  };
-
-  const handleDeleteNote = handleDelete('note');
-  const handleDeleteSnippet = handleDelete('snippet');
   
-  const deleteRemoteNote = useCallback((noteId: string) => {
-    return deleteMediaNote({
-      currentMedia: currentMedia.id,
-      noteId
-    })
-  }, [currentMedia])
-
-  const deleteRemoteSnippet = useCallback((snippetId: string) => {
-    return deleteMediaSnippet({
-      currentMedia: currentMedia.id,
-      snippetId
-    })
-  }, [currentMedia])
-
-  const handleToggleShowMore = (arg: {id: string; type: 'note' | 'snippet'}) => {
+  const handleToggleShowMore = (arg: ActiveDataType) => {
     dispatch(toggleShowMore({show: undefined}))
     dispatch(addData(arg))
   }
 
   return (
-    <>
       <TabScreen
         {
         ...{ setCurrentTab, slideRef }
@@ -203,15 +175,13 @@ export const PlayerDetailScreen: React.FC<{
           <View style={{ paddingHorizontal: 15, width: width - 30 }}>
             {type === 'Note' ? (
               <NoteTab
-                {...{ currentNotes, currentUser, playlist }}
-                handleDelete={handleDeleteNote}
+                {...{ currentNotes, currentUser, playlist, activeData }}
                 toggleShowMore={handleToggleShowMore}
                 handleReactions={handleAddReactionForNote}
               />
             ) : (
               <SnippetTab
-                {...{ currentSnippets, currentUser, playlist }}
-                handleDelete={handleDeleteSnippet}
+                {...{ currentSnippets, currentUser, playlist, activeData }}
                 toggleShowMore={handleToggleShowMore}
                 handleReactions={handleAddReactionForSnippet}
               />
@@ -219,8 +189,6 @@ export const PlayerDetailScreen: React.FC<{
           </View>
         )}
       />
-      <DeleteModal ref={handleDeleteRef} {...{currentMedia, deleteRemoteNote, deleteRemoteSnippet}} />
-    </>
   )
 }
 export default memo(PlayerDetailScreen);

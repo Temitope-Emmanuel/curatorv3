@@ -2,14 +2,16 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 // eslint-disable-next-line import/no-cycle
 import { RootState } from '..';
 
+export interface ActiveDataType {
+  id: string;
+  type: 'snippet' | 'note' | '',
+  isOwner: boolean;
+}
 interface AppState {
   seenSplashScreen: boolean;
   showMore: boolean;
   showReaction: boolean;
-  activeData: {
-    id: string;
-    type: 'snippet' | 'note' | ''
-  }
+  activeData: ActiveDataType
 }
 
 const initialState: AppState = {
@@ -18,7 +20,8 @@ const initialState: AppState = {
   showReaction: false,
   activeData: {
     id: '',
-    type: ''
+    type: '',
+    isOwner: false
   }
 };
 
@@ -32,7 +35,7 @@ export const appSlice = createSlice({
     toggleShowMore: (state, action: PayloadAction<{show?: boolean}>) => {
       state.showMore = action.payload?.show ?? !state.showMore;
     },
-    addData: (state, action: PayloadAction<{id: string;type: 'note' | 'snippet' | ''}>) => {
+    addData: (state, action: PayloadAction<ActiveDataType>) => {
       state.activeData = action.payload;
     },
     showEmoji: (state, action: PayloadAction<boolean>) => {

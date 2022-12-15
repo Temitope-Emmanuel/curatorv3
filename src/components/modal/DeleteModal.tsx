@@ -3,62 +3,61 @@ import { Text, View, StyleSheet } from 'react-native';
 import Button from '../Button';
 import { TEXT_PRIMARY } from '../../constants/colors';
 import { FONT_TEXT_BODY_2 } from '../../constants/fonts';
-import { useAppDispatch } from '../../hooks/redux';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import { deleteNotes } from '../../store/Notes';
 import { deleteSnippet } from '../../store/Snippets';
 import useToggle from '../../hooks/useToggle';
 import Modal from './Modal';
 import { IMedia } from '../../interfaces/Media';
+import { getData } from '../../store/App';
+import useFirestore from '../../utils/firestore';
 
 export interface DeleteAudioRef {
   toggleShowDelete: () => void;
-  setItemToDelete: (arg: { name: string; id: string; type: 'note' | 'snippet' }) => void;
 }
 
 interface DeleteModalProps {
   currentMedia: IMedia
-  deleteRemoteNote: (noteId: string) => Promise<void>;
-  deleteRemoteSnippet: (snippetId: string) => Promise<void>;
 }
 // eslint-disable-next-line react/display-name
-const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({currentMedia, deleteRemoteNote, deleteRemoteSnippet}, ref) => {
+const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({currentMedia}, ref) => {
   const dispatch = useAppDispatch();
+  const {deleteMediaNote, deleteMediaSnippet} = useFirestore();
   const [showDeleteModal, toggleShowDeleteModal] = useToggle();
-  const [itemToDelete, setItemToDelete] = useState<{
-    name: string;
-    id: string;
-    type: 'note' | 'snippet';
-  }>({
-    name: '',
-    id: '',
-    type: 'snippet',
-  });
+  const activeData = useAppSelector(getData);
 
+  
   const handleNoteDelete = useCallback(() => {
-    dispatch(deleteNotes({ id: itemToDelete.id }));
-    deleteRemoteNote(itemToDelete.id);
+    dispatch(deleteNotes({ id: activeData.id }));
+    // deleteRemoteNote(activeData.id);
+    deleteMediaNote({
+      currentMedia: currentMedia.id,
+      noteId: activeData.id
+    })
     toggleShowDeleteModal();
-  }, [dispatch, itemToDelete.id, toggleShowDeleteModal]);
+  }, [dispatch, activeData.id, toggleShowDeleteModal]);
 
   const handleSnippetDelete = useCallback(() => {
-    dispatch(deleteSnippet({ id: itemToDelete.id }));
-    deleteRemoteSnippet(itemToDelete.id);
+    dispatch(deleteSnippet({ id: activeData.id }));
+    deleteMediaSnippet({
+      currentMedia: currentMedia.id,
+      snippetId: activeData.id
+    })
     toggleShowDeleteModal();
-  }, [dispatch, itemToDelete.id, toggleShowDeleteModal]);
+  }, [dispatch, activeData.id, toggleShowDeleteModal]);
 
   useImperativeHandle(ref, () => ({
-    setItemToDelete,
     toggleShowDelete: toggleShowDeleteModal,
   }));
 
   return (
     <Modal isVisible={showDeleteModal} handleClose={toggleShowDeleteModal}>
       <Text style={styles.addAudioTitle}>
-        {`Are you sure you want to delete ${itemToDelete.name}`}
+        {`Are you sure you want to delete this ${activeData.type}`}
       </Text>
       <View style={styles.buttonContainer}>
         <Button
-          onPress={itemToDelete.type === 'note' ? handleNoteDelete : handleSnippetDelete}
+          onPress={activeData.type === 'note' ? handleNoteDelete : handleSnippetDelete}
           textOnly
           label="Yes"
         />

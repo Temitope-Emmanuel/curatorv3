@@ -6,7 +6,6 @@ import { INote } from '../interfaces/note';
 import { ReactionType } from '../interfaces/reaction';
 import { utilStyles } from '../utils/styles';
 import * as Animatable from 'react-native-animatable';
-import Reactions from './Reactions';
 
 interface NoteProps extends INote, BaseDatum {
   handlePress: (arg: { time: number }) => void;
@@ -18,9 +17,7 @@ const Notes: React.FC<NoteProps> = ({
   timestamp,
   handleReactions: handleAddReaction,
   description,
-  id,
   handlePress,
-  handleDelete,
   time,
   isAuthor,
   currentUser,
@@ -37,7 +34,7 @@ const Notes: React.FC<NoteProps> = ({
           return acc;
         },
         {
-          'add-reaction': [],
+          'star': [],
           'local-fire-department': [],
           favorite: [],
           recommend: [],
@@ -54,11 +51,11 @@ const Notes: React.FC<NoteProps> = ({
       handleAddReaction({ id: noteId, userId, reaction });
     };
 
-    const isSelected = useMemo(() => isActive && !isTheActive ? .5 : 1, [isActive, isTheActive])
+    const showActive = useMemo(() => isActive && !isTheActive, [isActive, isTheActive])
 
   return (
     <TouchableOpacity
-      style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse' }]}
+      style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse', opacity: !showActive ? 1 : .3 }]}
       onPress={() => handlePress({ time })}
       onLongPress={toggleShowMore}
       // onLongPress={isAuthor ? () => handleDelete(id) : undefined}
@@ -80,13 +77,7 @@ const Notes: React.FC<NoteProps> = ({
           ) : undefined}
         </View>
         <View style={{flexDirection: 'row'}}>
-          {/* <Reactions
-            currentUser={currentUser}
-            style={utilStyles.mrAuto}
-            handleReaction={handleReaction({ noteId: id, userId: owner.id })}
-            reactions={mappedReaction}
-          /> */}
-          <Animatable.View animation={status ? 'rubberBand': ''} duration={1000} style={{marginLeft: 'auto'}} iterationCount={5}>
+          <Animatable.View animation={status ? 'rubberBand': ''} duration={1200} style={utilStyles.timestamp} iterationCount={10}>
             <Text style={utilStyles.timestamp}>{timestamp}</Text>
           </Animatable.View>
         </View>

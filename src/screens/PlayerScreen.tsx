@@ -23,7 +23,8 @@ import useFirestore from '../utils/firestore';
 import PlayerDetailScreen from '../components/PlayerDetailScreen';
 import MoreOption from '../components/MoreOption';
 import { getShowMore } from '../store/App';
-import Animated, { FadeIn, FadeOut, SlideInDown, SlideOutDown, } from 'react-native-reanimated';
+import Animated, { SlideInDown, SlideOutDown, } from 'react-native-reanimated';
+import DeleteModal, { DeleteAudioRef } from '../components/modal/DeleteModal';
 
 type Props = StackScreenProps<RootStackParamList, 'PlayerScreen'>;
 
@@ -39,7 +40,8 @@ const PlayerScreen: React.FC<Props> = () => {
     const showMore = useAppSelector(getShowMore);
     const { playlist } = usePlayerService();
     const currentMedia = useAppSelector(getCurrentMedia);
-    const { sendInvitationToClique, getMediaClique } = useFirestore();
+    const handleDeleteRef = useRef<DeleteAudioRef>(null);
+    const { sendInvitationToClique, getMediaClique, deleteMediaNote, deleteMediaSnippet } = useFirestore();
     const slideRef = useRef<FlatList<PlayerTab>>(null);
     const showAddModalRef = useRef<AddDatumModalRef>(null);
     const [currentTab, setCurrentTab] = useState<PlayerScreenType>('Note');
@@ -104,6 +106,10 @@ const PlayerScreen: React.FC<Props> = () => {
         return { disable: false, reason: '' };
     }, [currentMedia.owner, currentMedia.availableRemote, currentUser]);
 
+      const handleDelete = () => {
+        handleDeleteRef.current?.toggleShowDelete();
+      }
+    
     const toggleNoteModal = () =>
         showAddModalRef.current ? showAddModalRef.current.toggleNoteModal() : () => { };
     // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -111,66 +117,69 @@ const PlayerScreen: React.FC<Props> = () => {
         showAddModalRef.current ? showAddModalRef.current.toggleSnippetModal() : () => { };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <SearchBar />
-            <View
-                style={{
-                    alignItems: 'center',
-                }}
-            >
-                <Text style={styles.title}>{currentMedia.title.split('.')[0]}</Text>
-                <Text style={styles.artist}>{currentMedia.author}</Text>
-            </View>
-            <View style={styles.detailContainer}>
-                <PlayerDetailScreen
-                    playlist={playlist.current}
-                    {...{
-                        setCurrentTab,
-                        slideRef,
-                        currentClique,
-                        currentUser,
+        <>
+            <SafeAreaView style={styles.container}>
+                <SearchBar />
+                <View
+                    style={{
+                        alignItems: 'center',
                     }}
+                >
+                    <Text style={styles.title}>{currentMedia.title.split('.')[0]}</Text>
+                    <Text style={styles.artist}>{currentMedia.author}</Text>
+                </View>
+                <View style={styles.detailContainer}>
+                    <PlayerDetailScreen
+                        playlist={playlist.current}
+                        {...{
+                            setCurrentTab,
+                            slideRef,
+                            currentClique,
+                            currentUser,
+                        }}
+                    />
+                    <ToggleContainer
+                        {...{
+                            currentTab,
+                            cliqueActive,
+                            currentClique,
+                            showDropdown,
+                            toggleShowDropdown,
+                            toggleNoteModal,
+                            toggleSnippetModal,
+                        }}
+                    />
+                </View>
+                <View style={styles.toggleContainer}>
+                    {
+                        showMore ?
+                            <Animated.View key='1' entering={SlideInDown.duration(400)} exiting={SlideOutDown.duration(400)}>
+                                <MoreOption {...{handleDelete}} />
+                            </Animated.View> :
+                            <Animated.View key='2' entering={SlideInDown.duration(400)} exiting={SlideOutDown.duration(400)}>
+                                <ToggleButton
+                                    active={currentTab}
+                                    onPress={toggleCurrentTab as (label: string) => void}
+                                    buttons={[
+                                        { icon: 'graphic-eq', label: 'Snippet' },
+                                        { icon: 'note', label: 'Note' },
+                                    ]}
+                                />
+                            </Animated.View>
+                    }
+                </View>
+                <PlayerScreenProgressBar />
+                <ActionContainer />
+                <CliqueInvite
+                    clique={clique}
+                    handleInvite={handleInvite}
+                    isOpen={showDropdown}
+                    handleClose={toggleShowDropdown}
                 />
-                <ToggleContainer
-                    {...{
-                        currentTab,
-                        cliqueActive,
-                        currentClique,
-                        showDropdown,
-                        toggleShowDropdown,
-                        toggleNoteModal,
-                        toggleSnippetModal,
-                    }}
-                />
-            </View>
-            <View style={styles.toggleContainer}>
-                {
-                    showMore ?
-                        <Animated.View key='1' entering={SlideInDown.duration(400)} exiting={SlideOutDown.duration(400)}>
-                            <MoreOption />
-                        </Animated.View> :
-                        <Animated.View key='2' entering={SlideInDown.duration(400)} exiting={SlideOutDown.duration(400)}>
-                            <ToggleButton
-                                active={currentTab}
-                                onPress={toggleCurrentTab as (label: string) => void}
-                                buttons={[
-                                    { icon: 'graphic-eq', label: 'Snippet' },
-                                    { icon: 'note', label: 'Note' },
-                                ]}
-                            />
-                        </Animated.View>
-                }
-            </View>
-            <PlayerScreenProgressBar />
-            <ActionContainer />
-            <CliqueInvite
-                clique={clique}
-                handleInvite={handleInvite}
-                isOpen={showDropdown}
-                handleClose={toggleShowDropdown}
-            />
+            </SafeAreaView>
             <AddDatumModal ref={showAddModalRef} {...{ currentUser, currentMedia }} />
-        </SafeAreaView>
+            <DeleteModal ref={handleDeleteRef} {...{currentMedia}} />
+        </>
     )
 }
 

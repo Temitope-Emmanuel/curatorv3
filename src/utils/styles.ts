@@ -22,6 +22,7 @@ export const utilStyles = StyleSheet.create({
   timestamp: {
     fontSize: 12,
     fontWeight: '800',
+    marginLeft: 'auto',
     color: TEXT_PRIMARY,
   },
 });
