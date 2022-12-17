@@ -8,28 +8,26 @@ import {
   Animated,
   useWindowDimensions,
 } from 'react-native';
-import IconImage from '../components/Icon';
+import * as Animatable from 'react-native-animatable';
+import { TouchableOpacity } from 'react-native-gesture-handler';
+import IconImage from './Icon';
 import { TEXT_SECONDARY, TEXT_PRIMARY } from '../constants/colors';
 import { ICON_SIZE_M } from '../constants/spacing';
 import useToggle from '../hooks/useToggle';
 import IconButton from './IconButton';
 import { useAppSelector } from '../hooks/redux';
 import { getAuth } from '../store/Auth';
-import useFirebaseAuth from '../utils/firebaseAuth';
-import * as Animatable from 'react-native-animatable';
+import { useFirebaseAuth } from '../utils/firebaseAuth';
 import { pulse } from '../utils/animation';
-import { TextInput } from './Input';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import getFCMToken, { requestUserPermission } from '../utils/firebaseNotifications';
-import useFirestore, { updateUserDetails } from '../utils/firestore';
+import { getFCMToken, requestUserPermission } from '../utils/firebaseNotifications';
+import { updateUserDetails } from '../utils/firestore';
 import { IUser } from '../interfaces/auth';
-
-
 
 const Header: React.FC<{
   search: string;
   setSearch: (arg: string) => void;
 }> = ({ search, setSearch }) => {
+// }> = ({ search, setSearch }) => {
   const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
   const { handleSignout, handleSignup } = useFirebaseAuth();
   const [logout, toggleLogout] = useToggle();
@@ -50,19 +48,19 @@ const Header: React.FC<{
     const enabled = await requestUserPermission();
     if (enabled) {
       const fcmToken = await getFCMToken();
-      if(fcmToken){
-        updateUserDetails({currentUser, fcmToken})
+      if (fcmToken) {
+        updateUserDetails({ currentUser, fcmToken });
       }
     }
-  }
+  };
 
   const onSignup = () => {
     handleSignup().then((user) => {
-      if(user && !user.fcmToken){
-        handleRequestForAccess(user.uid)
+      if (user && !user.fcmToken) {
+        handleRequestForAccess(user.uid);
       }
-    })
-  }
+    });
+  };
 
   return (
     <View style={styles.miniContainer}>
@@ -86,7 +84,12 @@ const Header: React.FC<{
           )}
         </TouchableOpacity>
       ) : (
-        <Animatable.View animation={pulse} easing='ease-in-out' duration={1500} iterationCount={'infinite'}>
+        <Animatable.View
+          animation={pulse}
+          easing="ease-in-out"
+          duration={1500}
+          iterationCount="infinite"
+        >
           <IconButton name="google" onPress={onSignup} size={ICON_SIZE_M} />
         </Animatable.View>
       )}
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
     height: 30,
     // justifyContent: 'center',
 
-    flexDirection: 'row'
+    flexDirection: 'row',
   },
   authContainer: {
     borderWidth: 1,

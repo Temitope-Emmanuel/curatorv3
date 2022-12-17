@@ -11,7 +11,16 @@ interface NoteTabProps extends BaseTabProps {
   currentNotes: RootState['notes']['currentNotes'];
 }
 
-const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReactions, playlist, toggleShowMore, activeData }) => {
+const NoteTab: React.FC<NoteTabProps> = ({
+  currentNotes,
+  currentUser,
+  handleReactions,
+  playlist,
+  toggleShowMore,
+  shouldShowEmoji,
+  activeData,
+  reset,
+}) => {
   const mappedNotes = useMemo(
     () => Object.values(currentNotes.notes).sort((a, b) => a.time - b.time),
     [currentNotes.notes]
@@ -32,8 +41,21 @@ const NoteTab: React.FC<NoteTabProps> = ({ currentNotes, currentUser, handleReac
       key={id}
       isActive={activeData.type === 'note'}
       isTheActive={activeData.id === id}
-      toggleShowMore={() => toggleShowMore({id, type: 'note', isOwner: currentUser?.uid === owner.id})}
-      {...{ description, id, owner, reactions, time, timestamp, handleReactions, status }}
+      toggleShowMore={() =>
+        toggleShowMore({ id, type: 'note', isOwner: currentUser?.uid === owner.id })
+      }
+      {...{
+        description,
+        id,
+        owner,
+        reactions,
+        time,
+        timestamp,
+        handleReactions,
+        status,
+        shouldShowEmoji,
+        reset,
+      }}
     />
   );
 

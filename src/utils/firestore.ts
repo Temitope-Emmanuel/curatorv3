@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 import allSettled from 'promise.allsettled';
+import { firebase } from '@react-native-firebase/auth';
 import { useAppSelector } from '../hooks/redux';
 import { IUser } from '../interfaces/auth';
 import { IMedia } from '../interfaces/Media';
@@ -9,7 +10,6 @@ import { ISnippet } from '../interfaces/snippet';
 import { INote } from '../interfaces/note';
 import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
 import { IClique } from '../interfaces/clique';
-import { firebase } from '@react-native-firebase/auth';
 import { notifyNewCliqueSubscriber } from './firebaseFunctions';
 
 const createSnippetRemote = (currentUser: IUser) => (currentMedia: IMedia['id']) => {
@@ -86,7 +86,6 @@ const createNewUser = (currentUser: IUser) =>
     .set({
       ...currentUser,
     });
-
 const findUser = (email: string) =>
   firestore()
     .collection('users')
@@ -158,12 +157,12 @@ const getMediaClique =
                 item.id === currentMedia.owner.id
                   ? 'Public'
                   : item.id === currentUser.uid
-                    ? 'Personal'
-                    : 'Secret',
+                  ? 'Personal'
+                  : 'Secret',
             });
           }
         });
-        setCliques(newCliques.filter(item => item.type === 'Public'));
+        setCliques(newCliques.filter((item) => item.type === 'Public'));
       });
 
 const sendInvitationToClique =
@@ -171,36 +170,36 @@ const sendInvitationToClique =
     const foundUser = await findUser(arg.email);
     if (foundUser?.length) {
       const newSubscriber = foundUser[0];
-      if(newSubscriber.fcmToken){
-        firestore()
-          .collection('media')
-          .doc(arg.currentMedia.id)
-          .collection('cliques')
-          .doc(currentUser.uid)
-          .set(
-            {
-              members: firestore.FieldValue.arrayUnion({
-                displayName: newSubscriber.displayName,
-                email: newSubscriber.email,
-                photoURL: newSubscriber.photoURL,
-                status: 'member',
-                uid: newSubscriber.uid,
-              }),
-              memberEmails: firestore.FieldValue.arrayUnion(newSubscriber.email),
-            },
-            { merge: true }
-          );
+      if (newSubscriber.fcmToken) {
+        notifyNewCliqueSubscriber({
+          recipient: {
+            fcmToken: newSubscriber.fcmToken,
+            name: newSubscriber.displayName,
+          },
+          sender: {
+            media: arg.currentMedia.title,
+            name: currentUser.displayName || '',
+          },
+        });
       }
-      return notifyNewCliqueSubscriber({
-        recipient: {
-          fcmToken: newSubscriber.fcmToken,
-          name: newSubscriber.displayName
-        },
-        sender: {
-          media: arg.currentMedia.title,
-          name: currentUser.displayName || ''
-        }
-      })
+      return firestore()
+        .collection('media')
+        .doc(arg.currentMedia.id)
+        .collection('cliques')
+        .doc(currentUser.uid)
+        .set(
+          {
+            members: firestore.FieldValue.arrayUnion({
+              displayName: newSubscriber.displayName,
+              email: newSubscriber.email,
+              photoURL: newSubscriber.photoURL,
+              status: 'member',
+              uid: newSubscriber.uid,
+            }),
+            memberEmails: firestore.FieldValue.arrayUnion(newSubscriber.email),
+          },
+          { merge: true }
+        );
     }
     throw new Error('user does not exist yet');
   };
@@ -229,60 +228,62 @@ const saveFileToCollection = (arg: IUser) => (downloadUrl: string, media: IMedia
 
 const handleSaveSnippetRemote =
   (currentUser: IUser) =>
-    (
-      { description, formatTime, id, reactions, time }: Omit<ISnippet, 'owner'>,
-      currentMedia: IMedia
-    ) => {
-      if (!currentMedia.availableRemote) {
-        createSnippetRemote(currentUser)(currentMedia.id)
-      }
-      firestore()
-        .collection('media')
-        .doc(currentMedia.id)
-        .collection('snippets')
-        .doc(currentUser?.uid)
-        .set(
-          {
-            data: {
-              [id]: {
-                description,
-                formatTime,
-                id,
-                reactions,
-                time,
-              },
+  (
+    { description, formatTime, id, reactions, time }: Omit<ISnippet, 'owner'>,
+    currentMedia: IMedia
+  ) => {
+    // Remove this later
+    if (!currentMedia.availableRemote) {
+      createSnippetRemote(currentUser)(currentMedia.id);
+    }
+    firestore()
+      .collection('media')
+      .doc(currentMedia.id)
+      .collection('snippets')
+      .doc(currentUser?.uid)
+      .set(
+        {
+          data: {
+            [id]: {
+              description,
+              formatTime,
+              id,
+              reactions,
+              time,
             },
           },
-          { merge: true }
-        );
-    }
+        },
+        { merge: true }
+      );
+  };
 
 const handleSaveNoteRemote =
   (currentUser: IUser) =>
-    ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) => {
-      if (!currentMedia.availableRemote) {
-        createNoteRemote(currentUser)(currentMedia.id)
-      }
-      firestore()
-        .collection('media')
-        .doc(currentMedia.id)
-        .collection('notes')
-        .doc(currentUser?.uid)
-        .set(
-          {
-            data: {
-              [id]: {
-                description,
-                id,
-                reactions,
-                time,
-                timestamp,
-              },
+  ({ description, id, reactions, time, timestamp }: Omit<INote, 'owner'>, currentMedia: IMedia) => {
+    // Remove this later
+    if (!currentMedia.availableRemote) {
+      createNoteRemote(currentUser)(currentMedia.id);
+    }
+    return firestore()
+      .collection('media')
+      .doc(currentMedia.id)
+      .collection('notes')
+      .doc(currentUser?.uid)
+      .set(
+        {
+          data: {
+            [id]: {
+              description,
+              id,
+              reactions,
+              time,
+              timestamp,
             },
           },
-          { merge: true }
-        );
-    }
+        },
+        { merge: true }
+      );
+  };
 
 const getRemoteAudioFilesByEmail =
   (currentUser: IUser) => async (setMedia: (arg: IMedia[]) => void) =>
@@ -345,7 +346,7 @@ const getAllMediaNote = ({
     .collection('notes')
     .onSnapshot((data) => {
       if (data.empty) {
-        createNoteRemote(currentUser)(currentMedia)
+        createNoteRemote(currentUser)(currentMedia);
       } else {
         const remoteUserNotes = data.docs.map((item) => {
           const doc = item.data();
@@ -368,28 +369,34 @@ const getAllMediaNote = ({
       }
     });
 
-const updateMediaNote = (currentUser: IUser) => ({ currentMedia, noteId }: {
-  noteId: string;
-  currentMedia: IMedia['id'];
-}) => (
-  firestore().collection('media').doc(currentMedia).collection('notes').doc(currentUser.uid).update({
-    [`data.${noteId}`]: firebase.firestore.FieldValue.delete()
-  })
-)
+const updateMediaNote =
+  (currentUser: IUser) =>
+  ({ currentMedia, noteId }: { noteId: string; currentMedia: IMedia['id'] }) =>
+    firestore()
+      .collection('media')
+      .doc(currentMedia)
+      .collection('notes')
+      .doc(currentUser.uid)
+      .update({
+        [`data.${noteId}`]: firebase.firestore.FieldValue.delete(),
+      });
 
-const updateMediaSnippet = (currentUser: IUser) => ({ currentMedia, snippetId }: {
-  snippetId: string;
-  currentMedia: IMedia['id']
-}) => (
-  firestore().collection('media').doc(currentMedia).collection('snippets').doc(currentUser.uid).update({
-    [`data.${snippetId}`]: firebase.firestore.FieldValue.delete()
-  })
-)
+const updateMediaSnippet =
+  (currentUser: IUser) =>
+  ({ currentMedia, snippetId }: { snippetId: string; currentMedia: IMedia['id'] }) =>
+    firestore()
+      .collection('media')
+      .doc(currentMedia)
+      .collection('snippets')
+      .doc(currentUser.uid)
+      .update({
+        [`data.${snippetId}`]: firebase.firestore.FieldValue.delete(),
+      });
 
 const getAllMediaSnippet = ({
   currentMedia,
   setSnippet,
-  currentUser
+  currentUser,
 }: {
   currentMedia: IMedia['id'];
   currentUser: IUser;
@@ -402,7 +409,7 @@ const getAllMediaSnippet = ({
     .collection('snippets')
     .onSnapshot((data) => {
       if (data.empty) {
-        createSnippetRemote(currentUser)(currentMedia)
+        createSnippetRemote(currentUser)(currentMedia);
       } else {
         const remoteUserSnippets = data.docs.map((item) => {
           const doc = item.data();
@@ -465,10 +472,19 @@ const updateSnippetReactions = ({
     });
 };
 
-export const updateUserDetails = ({ currentUser, fcmToken }: { currentUser: IUser['uid'], fcmToken: string }) =>
-  firestore().collection('users').doc(currentUser).set({
-    fcmToken
-  }, { merge: true })
+export const updateUserDetails = ({
+  currentUser,
+  fcmToken,
+}: {
+  currentUser: IUser['uid'];
+  fcmToken: string;
+}) =>
+  firestore().collection('users').doc(currentUser).set(
+    {
+      fcmToken,
+    },
+    { merge: true }
+  );
 
 export const useFirestore = () => {
   const { currentUser } = useAppSelector(getAuth);

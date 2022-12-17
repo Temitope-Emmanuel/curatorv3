@@ -1,5 +1,7 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import * as Animatable from 'react-native-animatable';
+import Animated, { SlideInLeft, SlideOutRight } from 'react-native-reanimated';
 import { BG_SECONDARY, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants/colors';
 import { BaseDatum } from '../interfaces/datum';
 import { ReactionType } from '../interfaces/reaction';
@@ -7,16 +9,11 @@ import { ISnippet } from '../interfaces/snippet';
 import { utilStyles } from '../utils/styles';
 import IconButton from './IconButton';
 import ProgressBar from './ProgressBarDef';
-import * as Animatable from 'react-native-animatable';
 import Reactions from './Reactions';
-import Animated, { SlideInLeft, SlideOutRight } from 'react-native-reanimated';
-import { useAppSelector } from '../hooks/redux';
-import { getShowReaction } from '../store/App';
 
 interface SnippetProps extends ISnippet, BaseDatum {
   active: boolean;
   duration?: number;
-  disabled: boolean;
   progress?: number;
   togglePause?: () => void;
   handlePlaySnippet: (arg: ISnippet) => void;
@@ -33,15 +30,17 @@ const Snippet: React.FC<SnippetProps> = ({
   status,
   handleReactions: handleAddReaction,
   handlePlaySnippet,
-  disabled,
   active,
   duration = 100,
   progress = 100,
   currentUser,
   toggleShowMore,
   isActive,
-  isTheActive
+  shouldShowEmoji,
+  isTheActive,
+  reset,
 }) => {
+  const showActive = useMemo(() => isActive && !isTheActive, [isActive, isTheActive]);
   const mappedReaction = useMemo(
     () =>
       Object.entries(reactions).reduce(
@@ -50,7 +49,7 @@ const Snippet: React.FC<SnippetProps> = ({
           return acc;
         },
         {
-          'star': [],
+          star: [],
           'local-fire-department': [],
           favorite: [],
           recommend: [],
@@ -68,12 +67,13 @@ const Snippet: React.FC<SnippetProps> = ({
     [handleAddReaction]
   );
 
-  const showActive = useMemo(() => isActive && !isTheActive, [isActive, isTheActive])
-  const shouldShowEmoji = useAppSelector(getShowReaction);
   return (
     <TouchableOpacity
       onLongPress={toggleShowMore}
-      style={[styles.container, { flexDirection: isAuthor ? 'row' : 'row-reverse', opacity: !showActive ? 1 : .3 }]}
+      style={[
+        styles.container,
+        { flexDirection: isAuthor ? 'row' : 'row-reverse', opacity: !showActive ? 1 : 0.3 },
+      ]}
     >
       {owner && owner.photoURL && owner.id !== currentUser && (
         <Image
@@ -96,26 +96,40 @@ const Snippet: React.FC<SnippetProps> = ({
             },
           ]}
         >
-          {
-            isTheActive && shouldShowEmoji ?
-              <Animated.View style={{ width: '80%' }} key='1' entering={SlideInLeft.duration(400)} exiting={SlideOutRight.duration(400)}>
-                <Reactions
-                  style={utilStyles.mrAuto}
-                  handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
-                  reactions={mappedReaction}
-                  currentUser={currentUser}
-                />
-              </Animated.View> :
-              <Animated.View style={{ width: '80%' }} key='2' entering={SlideInLeft.duration(400)} exiting={SlideOutRight.duration(400)}>
-                <ProgressBar addRadius {...{ progress, duration }} />
-                <Text style={{ color: TEXT_PRIMARY, fontWeight: '300' }}>{description}</Text>
-              </Animated.View>
-          }
-          <Animatable.View animation={status ? 'rubberBand' : ''} duration={1000} style={{ marginLeft: 'auto' }} iterationCount={5}>
+          {isTheActive && shouldShowEmoji ? (
+            <Animated.View
+              style={{ width: '80%' }}
+              key="1"
+              entering={SlideInLeft.duration(400)}
+              exiting={SlideOutRight.duration(400)}
+            >
+              <Reactions
+                style={utilStyles.mrAuto}
+                handleReaction={handleReaction({ snippetId: id, userId: owner.id })}
+                reactions={mappedReaction}
+                {...{ currentUser, reset }}
+              />
+            </Animated.View>
+          ) : (
+            <Animated.View
+              style={{ width: '85%' }}
+              key="2"
+              entering={SlideInLeft.duration(400)}
+              exiting={SlideOutRight.duration(400)}
+            >
+              <ProgressBar addRadius {...{ progress, duration }} />
+              <Text style={{ color: TEXT_PRIMARY, fontWeight: '300' }}>{description}</Text>
+            </Animated.View>
+          )}
+          <Animatable.View
+            animation={status ? 'rubberBand' : ''}
+            duration={1000}
+            style={{ marginLeft: 'auto' }}
+            iterationCount={5}
+          >
             <IconButton
               style={styles.playIcon}
               name={active ? 'pause' : 'play'}
-              // disabled={disabled && !active}
               onPress={() =>
                 handlePlaySnippet({
                   description,
@@ -155,7 +169,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 8,
     marginBottom: 10,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   playIcon: {
     marginLeft: 'auto',

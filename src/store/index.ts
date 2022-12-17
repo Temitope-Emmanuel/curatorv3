@@ -20,6 +20,7 @@ import uploadReducer from './Upload';
 import noteReducer from './Notes';
 import snippetReducer from './Snippets';
 import appReducer from './App';
+import tempReducer from './Temp';
 
 const middlewares = [thunk];
 const rootReducer = combineReducers({
@@ -29,11 +30,13 @@ const rootReducer = combineReducers({
   notes: noteReducer,
   snippets: snippetReducer,
   app: appReducer,
+  temp: tempReducer,
 });
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
+  blacklist: ['temp'],
   stateReconciler: autoMergeLevel2,
 };
 

@@ -1,37 +1,39 @@
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { FlatList, useWindowDimensions, View } from "react-native";
-import { useAppDispatch, useAppSelector } from "../hooks/redux";
-import { IUser } from "../interfaces/auth";
-import { IClique } from "../interfaces/clique";
-import { ICurrentNote } from "../interfaces/note";
-import { ReactionType } from "../interfaces/reaction";
-import { RemoteNote, RemoteSnippet } from "../interfaces/remoteData";
-import { ICurrentSnippet } from "../interfaces/snippet";
-import { SubscriberType } from "../interfaces/Subscriber";
-import { TrackPlayerClass } from "../providers/TrackPlayer";
-import { playerScreenContent } from "../screens/data";
-import { PlayerScreenType, PlayerTab } from "../screens/PlayerScreen";
-import { ActiveDataType, addData, getData, toggleShowMore } from "../store/App";
-import { getCurrentMedia } from "../store/Media";
-import { addNoteReaction, getCurrentNotes, loadNotes } from "../store/Notes";
-import { addSnippetReaction, getCurrentSnippets, loadSnippets } from "../store/Snippets";
-import useFirestore from "../utils/firestore";
-import NoteTab from "./NoteTab";
-import SnippetTab from "./SnippetTab";
-import TabScreen from "./TabScreen";
+import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, useWindowDimensions, View } from 'react-native';
+import { useAppDispatch, useAppSelector } from '../hooks/redux';
+import { IUser } from '../interfaces/auth';
+import { IClique } from '../interfaces/clique';
+import { ICurrentNote } from '../interfaces/note';
+import { ReactionType } from '../interfaces/reaction';
+import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
+import { ICurrentSnippet } from '../interfaces/snippet';
+import { SubscriberType } from '../interfaces/Subscriber';
+import { TrackPlayerClass } from '../providers/TrackPlayer';
+import { playerScreenContent } from '../screens/data';
+import { PlayerScreenType, PlayerTab } from '../screens/PlayerScreen';
+import { getCurrentMedia } from '../store/Media';
+import { addNoteReaction, getCurrentNotes, loadNotes } from '../store/Notes';
+import { addSnippetReaction, getCurrentSnippets, loadSnippets } from '../store/Snippets';
+import { getData, ActiveDataType, addData, getShowReaction } from '../store/Temp';
+import useFirestore from '../utils/firestore';
+import NoteTab from './NoteTab';
+import SnippetTab from './SnippetTab';
+import TabScreen from './TabScreen';
 
 export const PlayerDetailScreen: React.FC<{
   currentUser: IUser | null;
   currentClique: IClique;
+  reset: () => void;
   playlist: TrackPlayerClass | null;
   slideRef: React.RefObject<FlatList<PlayerTab>>;
   setCurrentTab: (label: PlayerScreenType) => void;
-}> = ({ setCurrentTab, slideRef, currentUser, currentClique, playlist }) => {
+}> = ({ setCurrentTab, slideRef, currentUser, currentClique, playlist, reset }) => {
   const dispatch = useAppDispatch();
   const { width } = useWindowDimensions();
-  const { updateNoteReactions, getAllMediaNote, updateSnippetReactions
-    , getAllMediaSnippet } = useFirestore();
+  const { updateNoteReactions, getAllMediaNote, updateSnippetReactions, getAllMediaSnippet } =
+    useFirestore();
   const currentMedia = useAppSelector(getCurrentMedia);
+  const shouldShowEmoji = useAppSelector(getShowReaction);
   const currentUserNotes = useAppSelector(getCurrentNotes);
   const currentUserSnippets = useAppSelector(getCurrentSnippets);
   const [remoteNote, setRemoteNote] = useState<RemoteNote[]>([]);
@@ -76,19 +78,19 @@ export const PlayerDetailScreen: React.FC<{
 
   const currentNotes = useMemo(
     () =>
-    ({
-      mediaId: currentMedia.id,
-      notes: {
-        ...currentUserNotes.notes,
-        ...remoteNote.reduce(
-          (acc, curVal) => ({
-            ...acc,
-            ...curVal.data,
-          }),
-          {} as ICurrentNote['notes']
-        ),
-      },
-    } as ICurrentNote),
+      ({
+        mediaId: currentMedia.id,
+        notes: {
+          ...currentUserNotes.notes,
+          ...remoteNote.reduce(
+            (acc, curVal) => ({
+              ...acc,
+              ...curVal.data,
+            }),
+            {} as ICurrentNote['notes']
+          ),
+        },
+      } as ICurrentNote),
     [currentMedia, remoteNote, currentUserNotes]
   );
 
@@ -159,36 +161,33 @@ export const PlayerDetailScreen: React.FC<{
       });
     }
   };
-  
+
   const handleToggleShowMore = (arg: ActiveDataType) => {
-    dispatch(toggleShowMore({show: undefined}))
-    dispatch(addData(arg))
-  }
+    dispatch(addData(arg));
+  };
 
   return (
-      <TabScreen
-        {
-        ...{ setCurrentTab, slideRef }
-        }
-        data={playerScreenContent}
-        renderItem={({ item: { type } }) => (
-          <View style={{ paddingHorizontal: 15, width: width - 30 }}>
-            {type === 'Note' ? (
-              <NoteTab
-                {...{ currentNotes, currentUser, playlist, activeData }}
-                toggleShowMore={handleToggleShowMore}
-                handleReactions={handleAddReactionForNote}
-              />
-            ) : (
-              <SnippetTab
-                {...{ currentSnippets, currentUser, playlist, activeData }}
-                toggleShowMore={handleToggleShowMore}
-                handleReactions={handleAddReactionForSnippet}
-              />
-            )}
-          </View>
-        )}
-      />
-  )
-}
+    <TabScreen
+      {...{ setCurrentTab, slideRef }}
+      data={playerScreenContent}
+      renderItem={({ item: { type } }) => (
+        <View style={{ paddingHorizontal: 15, width: width - 30 }}>
+          {type === 'Note' ? (
+            <NoteTab
+              {...{ currentNotes, currentUser, playlist, activeData, shouldShowEmoji, reset }}
+              toggleShowMore={handleToggleShowMore}
+              handleReactions={handleAddReactionForNote}
+            />
+          ) : (
+            <SnippetTab
+              {...{ currentSnippets, currentUser, playlist, activeData, shouldShowEmoji, reset }}
+              toggleShowMore={handleToggleShowMore}
+              handleReactions={handleAddReactionForSnippet}
+            />
+          )}
+        </View>
+      )}
+    />
+  );
+};
 export default memo(PlayerDetailScreen);

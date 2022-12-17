@@ -9,41 +9,41 @@ import { deleteSnippet } from '../../store/Snippets';
 import useToggle from '../../hooks/useToggle';
 import Modal from './Modal';
 import { IMedia } from '../../interfaces/Media';
-import { getData } from '../../store/App';
 import useFirestore from '../../utils/firestore';
+import { clearData, getData } from '../../store/Temp';
 
 export interface DeleteAudioRef {
   toggleShowDelete: () => void;
 }
 
 interface DeleteModalProps {
-  currentMedia: IMedia
+  currentMedia: IMedia;
 }
 // eslint-disable-next-line react/display-name
-const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({currentMedia}, ref) => {
+const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({ currentMedia }, ref) => {
   const dispatch = useAppDispatch();
-  const {deleteMediaNote, deleteMediaSnippet} = useFirestore();
+  const { deleteMediaNote, deleteMediaSnippet } = useFirestore();
   const [showDeleteModal, toggleShowDeleteModal] = useToggle();
   const activeData = useAppSelector(getData);
 
-  
   const handleNoteDelete = useCallback(() => {
     dispatch(deleteNotes({ id: activeData.id }));
-    // deleteRemoteNote(activeData.id);
     deleteMediaNote({
       currentMedia: currentMedia.id,
-      noteId: activeData.id
-    })
+      noteId: activeData.id,
+    });
     toggleShowDeleteModal();
+    dispatch(clearData());
   }, [dispatch, activeData.id, toggleShowDeleteModal]);
 
   const handleSnippetDelete = useCallback(() => {
     dispatch(deleteSnippet({ id: activeData.id }));
     deleteMediaSnippet({
       currentMedia: currentMedia.id,
-      snippetId: activeData.id
-    })
+      snippetId: activeData.id,
+    });
     toggleShowDeleteModal();
+    dispatch(clearData());
   }, [dispatch, activeData.id, toggleShowDeleteModal]);
 
   useImperativeHandle(ref, () => ({

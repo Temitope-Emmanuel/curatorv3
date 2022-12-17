@@ -2,10 +2,12 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { useProgress } from 'react-native-track-player';
 import { BG_TERTIARY, TEXT_TERTIARY } from '../constants/colors';
+import { useAppSelector } from '../hooks/redux';
 import { defaultSnippet, ISnippet } from '../interfaces/snippet';
 import { BaseTabProps } from '../interfaces/tab';
 import usePlayerService from '../providers/TrackPlayer';
 import { RootState } from '../store';
+import { getShowReaction } from '../store/Temp';
 import IconImage from './Icon';
 import Snippet from './Snippet';
 
@@ -13,22 +15,31 @@ interface SnippetTabProps extends BaseTabProps {
   currentSnippets: RootState['snippets']['currentSnippets'];
 }
 
-const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippets, currentUser, playlist, toggleShowMore, activeData }) => {
+const SnippetTab: React.FC<SnippetTabProps> = ({
+  handleReactions,
+  currentSnippets,
+  currentUser,
+  playlist,
+  toggleShowMore,
+  activeData,
+  reset,
+}) => {
   const { position } = useProgress();
   const { setPlayingSnippet } = usePlayerService();
+  const shouldShowEmoji = useAppSelector(getShowReaction);
   const [currentPlayingSnippet, setCurrentPlayingSnippet] = useState<ISnippet>(defaultSnippet);
   const mappedSnippets = useMemo(
     () => Object.values(currentSnippets.snippets).sort((a, b) => a.time.start - b.time.start),
     [currentSnippets]
   );
-  
+
   useEffect(() => {
     if (currentPlayingSnippet.id) {
-      setPlayingSnippet(true)
+      setPlayingSnippet(true);
     } else {
-      setPlayingSnippet(false)
+      setPlayingSnippet(false);
     }
-  }, [currentPlayingSnippet])
+  }, [currentPlayingSnippet]);
   useEffect(() => {
     if (currentPlayingSnippet.time.end && position >= currentPlayingSnippet.time.end) {
       setCurrentPlayingSnippet(defaultSnippet);
@@ -54,14 +65,26 @@ const SnippetTab: React.FC<SnippetTabProps> = ({ handleReactions, currentSnippet
       progress={currentPlayingSnippet.id === id ? position - time.start : undefined}
       duration={currentPlayingSnippet.id === id ? time.end - time.start : undefined}
       currentUser={currentUser?.uid ?? ''}
-      disabled={!!currentPlayingSnippet.id}
       handlePlaySnippet={handlePlaySnippet}
       isActive={activeData.type === 'snippet'}
       isTheActive={activeData.id === id}
       active={currentPlayingSnippet.id === id}
       isAuthor={currentUser?.uid === owner?.id}
-      toggleShowMore={() => toggleShowMore({id, type: 'snippet', isOwner: currentUser?.uid === owner.id})}
-      {...{ description, formatTime, id, owner, reactions, time, handleReactions, status }}
+      toggleShowMore={() =>
+        toggleShowMore({ id, type: 'snippet', isOwner: currentUser?.uid === owner.id })
+      }
+      {...{
+        description,
+        formatTime,
+        id,
+        owner,
+        reactions,
+        time,
+        handleReactions,
+        status,
+        shouldShowEmoji,
+        reset,
+      }}
     />
   );
 

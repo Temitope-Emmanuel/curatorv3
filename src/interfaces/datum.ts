@@ -6,4 +6,6 @@ export interface BaseDatum extends Pick<BaseTabProps, 'handleReactions'> {
   isTheActive: boolean;
   isAuthor: boolean;
   currentUser: string;
+  reset: () => void;
+  shouldShowEmoji: boolean;
 }

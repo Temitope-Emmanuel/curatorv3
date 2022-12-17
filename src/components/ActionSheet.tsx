@@ -5,7 +5,7 @@ import { IconProps } from '../interfaces/content';
 import { BG_TERTIARY, CHIP_TEXT, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants/colors';
 import { IMedia } from '../interfaces/Media';
 import Chips from './Chips';
-import IconImage from './Icon';
+import { IconImage } from './Icon';
 
 export interface ActionType {
   label: string;
@@ -80,23 +80,26 @@ const ActionSheet = React.forwardRef<Pick<ActionSheetRef, 'hide' | 'show'>, Acti
             <></>
           )}
         </View>
-        {action.map((item, idx) => (
-          item.visible ? 
-          <TouchableOpacity
-            key={item.label}
-            onPress={item.onPress}
-            disabled={item.disabled}
-            style={{
-              marginBottom: 10,
-              flexDirection: 'row',
-              alignItems: 'center',
-              opacity: item.disabled ? 0.5 : 1,
-            }}
-          >
-            <IconImage name={item.icon} width={30} fill={TEXT_SECONDARY} />
-            <Text style={{ color: CHIP_TEXT, marginLeft: 10 }}>{item.label}</Text>
-          </TouchableOpacity> : <React.Fragment key={idx}></React.Fragment>
-        ))}
+        {action.map((item, idx) =>
+          item.visible ? (
+            <TouchableOpacity
+              key={item.label}
+              onPress={item.onPress}
+              disabled={item.disabled}
+              style={{
+                marginBottom: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+                opacity: item.disabled ? 0.5 : 1,
+              }}
+            >
+              <IconImage name={item.icon} width={30} fill={TEXT_SECONDARY} />
+              <Text style={{ color: CHIP_TEXT, marginLeft: 10 }}>{item.label}</Text>
+            </TouchableOpacity>
+          ) : (
+            <React.Fragment key={idx} />
+          )
+        )}
       </NativeActionSheet>
     );
   }
