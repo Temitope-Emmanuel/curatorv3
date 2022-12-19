@@ -1,7 +1,7 @@
 import { FirebaseFirestoreTypes } from '@react-native-firebase/firestore';
 import { IUser } from './auth';
 
-interface ICliqueMember extends Pick<IUser, 'displayName' | 'email' | 'photoURL' | 'uid'> {
+export interface ICliqueMember extends Pick<IUser, 'displayName' | 'email' | 'photoURL' | 'uid'> {
   status: 'owner' | 'member';
 }
 

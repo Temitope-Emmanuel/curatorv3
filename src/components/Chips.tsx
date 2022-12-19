@@ -6,19 +6,19 @@ import IconButton from './IconButton';
 
 const Chips: React.FC<{
   label: string;
-  showAvatar?: boolean;
+  avatarImg?: string;
   active: boolean;
   onClick?: () => void;
   onCancel?: () => void;
-}> = ({ label, active, onClick, onCancel, showAvatar = false }) => (
+}> = ({ label, active, onClick, onCancel, avatarImg = '' }) => (
 	<TouchableOpacity onPress={onClick} disabled={!onClick} style={[styles.container, active && styles.activeBG]}>
 		{
-			showAvatar &&
+			avatarImg &&
 			<Image
               style={[
                 styles.img,
                ]}
-              source={{ uri: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60' }}
+              source={{ uri: avatarImg }}
             />
 		}
 		<Text

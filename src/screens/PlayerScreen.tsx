@@ -29,6 +29,7 @@ import { clearData, getData } from '../store/Temp';
 import BottomSheet from '../components/BottomSheet';
 import MentionModal from '../components/modal/MentionModal';
 import { PlayerScreenType, PlayerTab } from '../interfaces/PlayerScreenType';
+import { notifyCliqueMemberOfMention } from '../utils/firebaseFunctions';
 
 type Props = StackScreenProps<RootStackParamList, 'PlayerScreen'>;
 
@@ -127,6 +128,24 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
   const handleDelete = () => {
     handleDeleteRef.current?.toggleShowDelete();
   };
+
+  const sendAlertToMention = (userMention: string[]) => {
+    notifyCliqueMemberOfMention({
+      currentUser: currentUser?.displayName || '',
+      extraDetail: {
+        description: activeData.type,
+        id: activeData.id
+      },
+      userMention
+    }).then(() => {
+      toast({
+        type: 'success',
+        text2: 'selected clique members have been mentioned'
+      })
+      reset();
+      toggleShowMention();
+    })
+  }
 
   const toggleNoteModal = () =>
     showAddModalRef.current ? showAddModalRef.current.toggleNoteModal() : () => {};
@@ -234,6 +253,8 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
         ))}
       </BottomSheet>
       <MentionModal
+        onAccept={sendAlertToMention}
+        currentMembers={currentClique.members}
         handleClose={toggleShowMention}
         isOpen={showMention}
       />

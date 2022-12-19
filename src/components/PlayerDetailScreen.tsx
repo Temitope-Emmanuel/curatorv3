@@ -14,7 +14,7 @@ import { playerScreenContent } from '../screens/data';
 import { getCurrentMedia } from '../store/Media';
 import { addNoteReaction, getCurrentNotes, loadNotes } from '../store/Notes';
 import { addSnippetReaction, getCurrentSnippets, loadSnippets } from '../store/Snippets';
-import { getData, ActiveDataType, addData, getShowReaction } from '../store/Temp';
+import { getData, ActiveDataType, addData, getShowReaction, showEmoji } from '../store/Temp';
 import { useFirestore } from '../utils/firestore';
 import NoteTab from './NoteTab';
 import SnippetTab from './SnippetTab';
@@ -135,6 +135,7 @@ export const PlayerDetailScreen: React.FC<{
         },
       });
     }
+    dispatch(showEmoji(false))
   };
   const handleAddReactionForSnippet = (arg: {
     id: string;
@@ -160,6 +161,7 @@ export const PlayerDetailScreen: React.FC<{
         },
       });
     }
+    dispatch(showEmoji(false))
   };
 
   const handleToggleShowMore = (arg: ActiveDataType) => {

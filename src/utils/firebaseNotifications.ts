@@ -46,7 +46,6 @@ export const notificationListener = () => {
       type: 'success',
       text2: remoteMessage.notification?.body,
     });
-    console.log('this is a new message', remoteMessage);
   });
 };
 

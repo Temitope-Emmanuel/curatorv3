@@ -90,6 +90,7 @@ const findUser = (email: string) =>
   firestore()
     .collection('users')
     .where('email', '==', email)
+    .limit(1)
     .get()
     .then((docs) => {
       if (!docs.empty) {
