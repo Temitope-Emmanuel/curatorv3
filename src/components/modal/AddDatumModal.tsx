@@ -18,9 +18,10 @@ import { ISnippet, NewSnippet } from '../../interfaces/snippet';
 import usePlayerService from '../../providers/TrackPlayer';
 import { addCurrentNotes } from '../../store/Notes';
 import { addCurrentSnippets } from '../../store/Snippets';
-import useFirestore from '../../utils/firestore';
+import { useFirestore } from '../../utils/firestore';
 import AddNote from './AddNote';
 import AddSnippet from './AddSnippet';
+import toast from '../../hooks/useToast';
 
 interface AddDatumModalProps {
   currentUser: IUser | null;
@@ -92,7 +93,10 @@ export const AddDatumModal = forwardRef<AddDatumModalRef, AddDatumModalProps>(
         );
         if (currentUser?.emailVerified) {
           handleSaveNoteRemote(newNote, currentMedia).catch((err) => {
-            console.log('theres been an err', err);
+            toast({
+              type: 'error',
+              text2: err
+            })
           });
         }
         toggleNoteModal();

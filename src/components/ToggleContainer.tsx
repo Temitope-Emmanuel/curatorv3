@@ -5,11 +5,11 @@ import { DROPDOWN_TEXT } from '../constants/colors';
 import { useAppSelector } from '../hooks/redux';
 import toast from '../hooks/useToast';
 import { IClique } from '../interfaces/clique';
-import { PlayerTab } from '../screens/PlayerScreen';
 import { getCurrentNoteCount } from '../store/Notes';
 import { getCurrentSnippetCount } from '../store/Snippets';
 import IconButton from './IconButton';
 import { pulse } from '../utils/animation';
+import { PlayerTab } from '../interfaces/PlayerScreenType';
 
 const ToggleContainer: React.FC<{
   showDropdown: boolean;
@@ -46,7 +46,7 @@ const ToggleContainer: React.FC<{
   const animateCreateButton = useMemo(
     () =>
       (snippetCount < 1 && currentTab === 'Snippet') || (noteCount < 1 && currentTab === 'Note'),
-    [snippetCount, currentTab]
+    [snippetCount, currentTab, noteCount]
   );
 
   return (
@@ -62,7 +62,9 @@ const ToggleContainer: React.FC<{
         >
           <Text style={styles.dropDownHeader}>{currentClique?.type}</Text>
           <Text style={styles.dropDownText}>
-            {(currentClique?.createdAt as any)?.toDate().toDateString() || ''}
+            {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (currentClique?.createdAt as any)?.toDate().toDateString() || ''}
           </Text>
         </View>
         <IconButton

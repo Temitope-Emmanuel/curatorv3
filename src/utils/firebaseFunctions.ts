@@ -1,6 +1,7 @@
 import functions from '@react-native-firebase/functions'
+import toast from '../hooks/useToast';
 
-interface notifyNewSubscriberArg {
+interface NotifyNewSubscriberArg {
     recipient: {
       name: string;
       fcmToken: string;
@@ -11,9 +12,17 @@ interface notifyNewSubscriberArg {
     }
 }
 
-export const notifyNewCliqueSubscriber = (arg: notifyNewSubscriberArg) => 
-    functions().httpsCallable('sendPushNotificationForNewCliquer')(arg).then((response: any) => {
-        console.log('this is the response', response.results)
+export const notifyNewCliqueSubscriber = (arg: NotifyNewSubscriberArg) => 
+    functions().httpsCallable('sendPushNotificationForNewCliquer')(arg).then((response) => {
+      toast({
+        type: 'success',
+        text2: 'an invite has been sent'
+      })
     }).catch(err => {
-      console.log('there\'s been an errrr', err)
+      toast({
+        type: 'error',
+        text2: err
+      })
     })
+
+    export default notifyNewCliqueSubscriber;

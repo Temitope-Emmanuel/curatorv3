@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StackScreenProps } from '@react-navigation/stack';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, { SlideInDown, SlideOutDown } from 'react-native-reanimated';
-import { BG_PRIMARY, BG_TERTIARY, TEXT_PRIMARY } from '../constants/colors';
+import { ActionSheetRef } from 'react-native-actions-sheet';
+import { BG_PRIMARY, BG_TERTIARY, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants/colors';
 import { RootStackParamList } from '../interfaces/navigation';
 import SearchBar from '../components/SearchBar';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
@@ -13,32 +14,33 @@ import ToggleButton from '../components/ToggleButton';
 import ActionContainer from '../components/ActionContainer';
 import PlayerScreenProgressBar from '../components/PlayerScreenProgressBar';
 import CliqueInvite from '../components/modal/CliqueInvite';
-import AddDatumModal, { AddDatumModalRef } from '../components/modal/AddDatumModal';
+import { AddDatumModal, AddDatumModalRef } from '../components/modal/AddDatumModal';
 import { getAuth } from '../store/Auth';
 import usePlayerService from '../providers/TrackPlayer';
 import ToggleContainer from '../components/ToggleContainer';
 import { defaultClique, IClique } from '../interfaces/clique';
 import useToggle from '../hooks/useToggle';
 import toast from '../hooks/useToast';
-import useFirestore from '../utils/firestore';
-import PlayerDetailScreen from '../components/PlayerDetailScreen';
-import MoreOption from '../components/MoreOption';
+import { useFirestore } from '../utils/firestore';
+import { PlayerDetailScreen } from '../components/PlayerDetailScreen';
+import { MoreOption } from '../components/MoreOption';
 import DeleteModal, { DeleteAudioRef } from '../components/modal/DeleteModal';
 import { clearData, getData } from '../store/Temp';
+import BottomSheet from '../components/BottomSheet';
+import MentionModal from '../components/modal/MentionModal';
+import { PlayerScreenType, PlayerTab } from '../interfaces/PlayerScreenType';
 
 type Props = StackScreenProps<RootStackParamList, 'PlayerScreen'>;
 
-export type PlayerScreenType = 'Snippet' | 'Note';
-
-export type PlayerTab = {
-  type: PlayerScreenType;
-  id: string;
-};
+const rateOption = [
+  1.00,1.15,1.25,1.5,2
+]
 
 const PlayerScreen: React.FC<Props> = ({ navigation }) => {
   const dispatch = useAppDispatch();
-  const { playlist } = usePlayerService();
+  const { playlist, rate, setRate } = usePlayerService();
   const activeData = useAppSelector(getData);
+  const [showMention, toggleShowMention] = useToggle();
   const { currentUser } = useAppSelector(getAuth);
   const slideRef = useRef<FlatList<PlayerTab>>(null);
   const handleDeleteRef = useRef<DeleteAudioRef>(null);
@@ -46,14 +48,19 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
   const currentMedia = useAppSelector(getCurrentMedia);
   const { sendInvitationToClique, getMediaClique } = useFirestore();
   const [currentTab, setCurrentTab] = useState<PlayerScreenType>('Note');
+  const actionSheetRef = useRef<Pick<ActionSheetRef, 'hide' | 'show'>>(null);
   const [showDropdown, toggleShowDropdown] = useToggle(false);
   const [clique, setClique] = useState<IClique[]>([]);
+
+  const reset = useCallback(() => {
+    dispatch(clearData());
+  }, [dispatch]);
 
   useEffect(() => {
     navigation.addListener('focus', () => {
       reset();
     });
-  }, [navigation]);
+  }, [navigation, reset]);
 
   useEffect(() => {
     if (currentMedia.id) {
@@ -64,7 +71,7 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     reset();
-  }, [currentTab]);
+  }, [currentTab, reset]);
 
   const currentClique = useMemo(() => {
     if (clique.length) {
@@ -128,9 +135,6 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
     showAddModalRef.current ? showAddModalRef.current.toggleSnippetModal() : () => {};
 
   const showMore = useMemo(() => activeData.id.length, [activeData]);
-  const reset = () => {
-    dispatch(clearData());
-  };
 
   return (
     <>
@@ -173,14 +177,20 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
               key="1"
               entering={SlideInDown.duration(400)}
               exiting={SlideOutDown.duration(400)}
-            >
-              <MoreOption {...{ handleDelete }} />
+              style={{
+                marginLeft: 'auto'
+              }}
+             >
+              <MoreOption {...{ handleDelete, toggleShowMention }} />
             </Animated.View>
           ) : (
             <Animated.View
               key="2"
               entering={SlideInDown.duration(400)}
               exiting={SlideOutDown.duration(400)}
+              style={{
+                marginLeft: 'auto'
+              }}
             >
               <ToggleButton
                 active={currentTab}
@@ -192,6 +202,13 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
               />
             </Animated.View>
           )}
+          <View style={{
+            marginLeft: 'auto'
+          }}>
+          <TouchableOpacity onPress={actionSheetRef.current?.show} style={styles.rateContainer}>
+                <Text style={styles.rateText}>{`${rate}x`}</Text>
+              </TouchableOpacity>
+          </View>
         </View>
         <PlayerScreenProgressBar />
         <ActionContainer />
@@ -204,6 +221,25 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
       </SafeAreaView>
       <AddDatumModal ref={showAddModalRef} {...{ currentUser, currentMedia }} />
       <DeleteModal ref={handleDeleteRef} {...{ currentMedia }} />
+      <BottomSheet
+        ref={actionSheetRef}
+      >
+        {rateOption.map(item => (
+          <TouchableOpacity key={item} onPress={() => {
+            setRate(item);
+            actionSheetRef.current?.hide()
+          }}>
+            <Text style={[styles.rateSelectText, {
+              fontSize: item === rate ? 25 : 20,
+              opacity: item === rate ? 1 : .5,
+            }]}>{`${item}x`}</Text>
+          </TouchableOpacity>
+        ))}
+      </BottomSheet>
+      <MentionModal
+        handleClose={toggleShowMention}
+        isOpen={showMention}
+      />
     </>
   );
 };
@@ -241,7 +277,26 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     height: 45,
     marginVertical: 2.5,
+    flexDirection: 'row',
   },
+  rateContainer: {
+    backgroundColor: TEXT_SECONDARY,
+    borderRadius: 25,
+    marginRight: 'auto',
+
+  },
+  rateText: {
+    fontSize: 16,
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    fontWeight: '700'
+  },
+  rateSelectText: {
+    textAlign: 'center',
+    fontWeight: 'bold',
+    color: '#B2B4AA',
+    
+  }
 });
 
 export default PlayerScreen;

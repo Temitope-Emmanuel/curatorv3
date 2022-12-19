@@ -1,4 +1,4 @@
-import DocumentPicker, { types, isInProgress } from 'react-native-document-picker';
+import DocumentPicker, { isInProgress } from 'react-native-document-picker';
 import toast from '../hooks/useToast';
 import { NormalizedData } from '../interfaces/normalizedData';
 

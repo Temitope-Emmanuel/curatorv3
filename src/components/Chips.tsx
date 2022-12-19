@@ -1,16 +1,26 @@
 import React from 'react';
-import { Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { CHIP_TEXT, TEXT_BLACK, TEXT_SECONDARY } from '../constants/colors';
 import { CHIP_ROUNDED } from '../constants/spacing';
 import IconButton from './IconButton';
 
 const Chips: React.FC<{
   label: string;
+  showAvatar?: boolean;
   active: boolean;
   onClick?: () => void;
   onCancel?: () => void;
-}> = ({ label, active, onClick, onCancel }) => (
+}> = ({ label, active, onClick, onCancel, showAvatar = false }) => (
 	<TouchableOpacity onPress={onClick} disabled={!onClick} style={[styles.container, active && styles.activeBG]}>
+		{
+			showAvatar &&
+			<Image
+              style={[
+                styles.img,
+               ]}
+              source={{ uri: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8cHJvZmlsZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=700&q=60' }}
+            />
+		}
 		<Text
 			numberOfLines={1}
 			style={[styles.chipLabel, active ? styles.activeText : { color: CHIP_TEXT }]}
@@ -53,6 +63,16 @@ const styles = StyleSheet.create({
 	activeBG: {
 		backgroundColor: TEXT_SECONDARY,
 	},
+	img: {
+		height: 30,
+		width: 30,
+		position: 'relative',
+		borderRadius: 22,
+		borderStyle: 'solid',
+		marginRight: 5,
+		borderWidth: 2,
+		borderColor: TEXT_SECONDARY,
+	  },
 });
 
 export default Chips;

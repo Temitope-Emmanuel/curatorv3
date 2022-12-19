@@ -18,3 +18,6 @@ export const pulse: Animatable.CustomAnimation<TextStyle & ViewStyle & ImageStyl
       transform: [{scale: 1}]
     },
   };
+
+  export default pulse;
+  

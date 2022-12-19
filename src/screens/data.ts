@@ -1,4 +1,4 @@
-import { PlayerScreenType } from "./PlayerScreen";
+import { PlayerScreenType } from "../interfaces/PlayerScreenType";
 
 export const splashScreenContent = [
   {

@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useCallback, useImperativeHandle, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useImperativeHandle } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import Button from '../Button';
 import { TEXT_PRIMARY } from '../../constants/colors';
@@ -9,7 +9,7 @@ import { deleteSnippet } from '../../store/Snippets';
 import useToggle from '../../hooks/useToggle';
 import Modal from './Modal';
 import { IMedia } from '../../interfaces/Media';
-import useFirestore from '../../utils/firestore';
+import { useFirestore } from '../../utils/firestore';
 import { clearData, getData } from '../../store/Temp';
 
 export interface DeleteAudioRef {
@@ -34,7 +34,7 @@ const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({ currentMedia
     });
     toggleShowDeleteModal();
     dispatch(clearData());
-  }, [dispatch, activeData.id, toggleShowDeleteModal]);
+  }, [dispatch, activeData.id, deleteMediaNote, currentMedia.id, toggleShowDeleteModal]);
 
   const handleSnippetDelete = useCallback(() => {
     dispatch(deleteSnippet({ id: activeData.id }));
@@ -44,7 +44,7 @@ const DeleteModal = forwardRef<DeleteAudioRef, DeleteModalProps>(({ currentMedia
     });
     toggleShowDeleteModal();
     dispatch(clearData());
-  }, [dispatch, activeData.id, toggleShowDeleteModal]);
+  }, [dispatch, activeData.id, deleteMediaSnippet, currentMedia.id, toggleShowDeleteModal]);
 
   useImperativeHandle(ref, () => ({
     toggleShowDelete: toggleShowDeleteModal,

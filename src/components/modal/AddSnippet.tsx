@@ -64,6 +64,7 @@ const AddSnippetModal: React.FC<AddSnippetProps> = ({
     setValue('endTime.Hour', splitEndProgress[0]);
     setValue('endTime.Minute', splitEndProgress[1]);
     setValue('endTime.Second', splitEndProgress[2]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setValue]);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps

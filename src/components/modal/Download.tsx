@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import React, { forwardRef, useImperativeHandle, useMemo, useState } from 'react';
 import RNFS from 'react-native-fs';
 import { View, Text, StyleSheet } from 'react-native';
 import { TEXT_PRIMARY } from '../../constants/colors';
@@ -21,7 +21,7 @@ export interface DownloadModalRef extends ModalRef {
   setDownloadMedia: (arg:IMedia) => void;
 }
 
-const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>(({}, ref) => {
+const DownloadModal = forwardRef<DownloadModalRef, DownloadModalProps>((_, ref) => {
   const dispatch = useAppDispatch();
   const [downloadMedia, setDownloadMedia] = useState<IMedia>(defaultAudio);
   const [showModal, toggleShowModal, setShowModal] = useToggle();

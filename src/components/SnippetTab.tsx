@@ -8,7 +8,7 @@ import { BaseTabProps } from '../interfaces/tab';
 import usePlayerService from '../providers/TrackPlayer';
 import { RootState } from '../store';
 import { getShowReaction } from '../store/Temp';
-import IconImage from './Icon';
+import { IconImage } from './Icon';
 import Snippet from './Snippet';
 
 interface SnippetTabProps extends BaseTabProps {

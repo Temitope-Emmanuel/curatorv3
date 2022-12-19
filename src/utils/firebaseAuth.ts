@@ -1,5 +1,6 @@
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
+import crashlytics from '@react-native-firebase/crashlytics';
 import toast from '../hooks/useToast';
 import { setUser } from '../store/Auth';
 import { useAppDispatch } from '../hooks/redux';
@@ -31,6 +32,7 @@ export const useFirebaseAuth = () => {
             });
           })
           .catch((err) => {
+            crashlytics().recordError(err)
             toast({
               type: 'error',
               text2: `error occurred while login, ${err.message}`,
@@ -71,6 +73,7 @@ export const useFirebaseAuth = () => {
       return foundUser?.length ? foundUser[0] : undefined;
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
+      crashlytics().recordError(err)
       toast({
         type: 'error',
         text2: `error occurred while login, ${err.message}`

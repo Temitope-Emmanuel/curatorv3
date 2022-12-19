@@ -2,7 +2,7 @@ import React, { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { TEXT_PRIMARY, TOGGLE_BUTTON, TOGGLE_BUTTON_ACTIVE } from '../constants/colors';
 import { IconProps } from '../interfaces/content';
-import IconImage from './Icon';
+import { IconImage } from './Icon';
 
 const ToggleButton: React.FC<{
   onPress: (label: string) => void;

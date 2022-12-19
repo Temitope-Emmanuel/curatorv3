@@ -22,12 +22,11 @@ import Header from '../components/Header';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import useTimeFormatter from '../hooks/useTimeFormatter';
 import { getAuth } from '../store/Auth';
-import useFirestore from '../utils/firestore';
+import { useFirestore } from '../utils/firestore';
 import {
   addToPlaylist,
   deleteMedia,
   editMedia,
-  getCurrentMedia,
   getPlaylist,
   getTags,
 } from '../store/Media';
@@ -336,7 +335,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             },
       },
     ],
-    [selectedAudio, updateAudioRef, currentUser?.email, dispatch, handleCloseActionSheet]
+    [selectedAudio, currentUser?.email, dispatch, handleCloseActionSheet, handleSetUploadingMedia, toggleShowUploadModal]
   );
 
   const navigateToPlayer = useCallback(

@@ -85,7 +85,6 @@ export const UploadServiceProvider = <P extends object>(Component: React.Compone
                     });
                 }
             } catch (err) {
-                console.log('this is the err', err)
                 toast({
                     type: 'error',
                     text2: 'something went wrong',

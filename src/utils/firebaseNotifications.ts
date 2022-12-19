@@ -21,10 +21,10 @@ export const getFCMToken = async () => {
         AsyncStorage.setItem(FCM_TOKEN, fcmToken);
       }
       return fcmToken;
-    } catch (err: any) {
+    } catch (err) {
       toast({
         type: 'error',
-        text2: err.message,
+        text2: err as unknown as string,
       });
       // console.log('something went wrong', err)
     }

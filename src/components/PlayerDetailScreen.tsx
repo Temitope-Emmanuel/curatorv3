@@ -4,21 +4,21 @@ import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { IUser } from '../interfaces/auth';
 import { IClique } from '../interfaces/clique';
 import { ICurrentNote } from '../interfaces/note';
+import { PlayerScreenType, PlayerTab } from '../interfaces/PlayerScreenType';
 import { ReactionType } from '../interfaces/reaction';
 import { RemoteNote, RemoteSnippet } from '../interfaces/remoteData';
 import { ICurrentSnippet } from '../interfaces/snippet';
 import { SubscriberType } from '../interfaces/Subscriber';
 import { TrackPlayerClass } from '../providers/TrackPlayer';
 import { playerScreenContent } from '../screens/data';
-import { PlayerScreenType, PlayerTab } from '../screens/PlayerScreen';
 import { getCurrentMedia } from '../store/Media';
 import { addNoteReaction, getCurrentNotes, loadNotes } from '../store/Notes';
 import { addSnippetReaction, getCurrentSnippets, loadSnippets } from '../store/Snippets';
 import { getData, ActiveDataType, addData, getShowReaction } from '../store/Temp';
-import useFirestore from '../utils/firestore';
+import { useFirestore } from '../utils/firestore';
 import NoteTab from './NoteTab';
 import SnippetTab from './SnippetTab';
-import TabScreen from './TabScreen';
+import { TabScreen } from './TabScreen';
 
 export const PlayerDetailScreen: React.FC<{
   currentUser: IUser | null;

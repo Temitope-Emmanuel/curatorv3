@@ -9,7 +9,7 @@ import { TEXT_PRIMARY } from '../../constants/colors';
 import { FONT_TEXT_BODY_2 } from '../../constants/fonts';
 import toast from '../../hooks/useToast';
 import { IClique } from '../../interfaces/clique';
-import CliqueOption from '../CliqueOption';
+import { CliqueOption } from '../CliqueOption';
 import Modal from './Modal';
 
 const schema = Yup.object({

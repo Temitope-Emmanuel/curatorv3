@@ -43,6 +43,7 @@ export class TimeFormatter {
     ).join(':');
 
   formatTime = (timeObj: TimeType) =>
+    // eslint-disable-next-line no-useless-concat
     `${timeObj.Hour > 0 ? `${timeObj?.Hour}h` : ''} ` + `${timeObj?.Minute}m`;
 }
 

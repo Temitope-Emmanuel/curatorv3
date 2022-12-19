@@ -4,7 +4,7 @@ import { TEXT_TERTIARY } from '../constants/colors';
 import { INote } from '../interfaces/note';
 import { BaseTabProps } from '../interfaces/tab';
 import { RootState } from '../store';
-import IconImage from './Icon';
+import { IconImage } from './Icon';
 import Notes from './Notes';
 
 interface NoteTabProps extends BaseTabProps {

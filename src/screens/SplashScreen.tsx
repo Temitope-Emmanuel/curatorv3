@@ -12,16 +12,16 @@ import {
 import auth from '@react-native-firebase/auth';
 import Paginator from '../components/Paginator';
 import { RootStackParamList } from '../interfaces/navigation';
-import splashScreenContent from './data';
+import { splashScreenContent } from './data';
 import * as ROUTES from '../constants/routes';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import { getSeenSplashScreen, setSeenSplashScreen } from '../store/App';
-import IconImage from '../components/Icon';
+import { IconImage } from '../components/Icon';
 import { IconProps } from '../interfaces/content';
 import { BG_PRIMARY, TEXT_PRIMARY, TEXT_SECONDARY } from '../constants/colors';
 import { FONT_HEADER_1, FONT_HEADER_2 } from '../constants/fonts';
 import Button from '../components/Button';
-import TabScreen from '../components/TabScreen';
+import { TabScreen } from '../components/TabScreen';
 import { getAuth } from '../store/Auth';
 
 type Props = StackScreenProps<RootStackParamList, 'SplashScreen'>;
