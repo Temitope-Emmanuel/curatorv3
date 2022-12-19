@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#24251D',
     overflow: 'hidden',
     flexDirection: 'row',
-    height: '100%'
+    height: '100%',
   },
   toggle: {
     paddingVertical: 5,

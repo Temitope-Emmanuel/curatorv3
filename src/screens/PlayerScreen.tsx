@@ -177,9 +177,6 @@ const PlayerScreen: React.FC<Props> = ({ navigation }) => {
               key="1"
               entering={SlideInDown.duration(400)}
               exiting={SlideOutDown.duration(400)}
-              style={{
-                marginLeft: 'auto'
-              }}
              >
               <MoreOption {...{ handleDelete, toggleShowMention }} />
             </Animated.View>
